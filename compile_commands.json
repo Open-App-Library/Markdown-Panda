@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/doug/Code/c/html-to-md/cmake",
+  "command": "/usr/bin/c++   -I/home/doug/Code/c/html-to-md/myhtml-dist/include    -o CMakeFiles/htmltomd.dir/src/main.cc.o -c /home/doug/Code/c/html-to-md/src/main.cc",
+  "file": "/home/doug/Code/c/html-to-md/src/main.cc"
+}
+]

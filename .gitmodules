@@ -1,0 +1,3 @@
+[submodule "myhtml"]
+	path = extras/myhtml
+	url = https://github.com/lexborisov/myhtml.git
