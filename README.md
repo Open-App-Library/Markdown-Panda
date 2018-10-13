@@ -6,9 +6,9 @@ MarkdownPanda: WORK IN PROGRESS
 #### First compile MyHTML
 
 - `git submodule update --init`
-- `cd myhtml`
+- `cd external-libraries/myhtml`
 - `make`
-- `make install PREFIX=".."`
+- `make install PREFIX="../.."`
 
 #### Then compile the project
 
