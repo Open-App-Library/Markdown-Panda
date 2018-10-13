@@ -5,3 +5,7 @@
 # Folders
 cmake/
 myhtml-dist/
+
+# Includes and Libs
+include/my*
+lib/

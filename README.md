@@ -8,7 +8,7 @@ MarkdownPanda: WORK IN PROGRESS
 - `git submodule update --init`
 - `cd external-libraries/myhtml`
 - `make`
-- `make install PREFIX="../.."`
+- `make install prefix="../.."`
 
 #### Then compile the project
 
