@@ -1,0 +1,3 @@
+[submodule "external-libraries/myhtml"]
+	path = external-libraries/myhtml
+	url = https://github.com/lexborisov/myhtml.git
