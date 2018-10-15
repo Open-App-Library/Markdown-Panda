@@ -1,97 +1,34 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>
-#include <myhtml/api.h>
+#include "helper.h"
+#include "markdownpanda.h"
+#include <time.h>
 
-struct res_html {
-    char  *html;
-    size_t size;
-};
+boolean showParseTime = false;
 
-void RemoveSpaces(char* source)
+int main(int argc, char **argv)
 {
-  char* i = source;
-  char* j = source;
-  while(*j != 0)
-  {
-    *i = *j++;
-    if(*i != ' ')
-      i++;
+  if (argc < 2) {
+    printf("Usage: mdpanda [filename.html] [-t (Will show parse time as HTML comment)] \n");
+    printf("Converts HTML file to markdown.\n");
+    exit( EXIT_FAILURE );
+  } else if (argc > 2) {
+    if (strcmp(argv[2], "-t") == 0)
+      showParseTime = true;
   }
-  *i = 0;
-}
-
-char* concat(const char *s1, const char *s2)
-{
-  char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
-  strcpy(result, s1);
-  strcat(result, s2);
-  return result;
-}
-
-void print_tree(myhtml_tree_t* tree, myhtml_tree_node_t *node)
-{
-  while (node) {
-    myhtml_tag_id_t     tag_id          = myhtml_node_tag_id(node);
-    char               *tag_name        = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
-    myhtml_tree_node_t *parent          = myhtml_node_parent(node);
-    myhtml_tag_id_t     parent_tag_id   = myhtml_node_tag_id(parent);
-    char               *parent_tag_name = (char*) myhtml_tag_name_by_id(tree, parent_tag_id, NULL);
-
-    if (tag_id == MyHTML_TAG__TEXT) {
-      char *text = (char*) myhtml_node_text(node, NULL);
-      char text_nowhitespace[strlen(text)];
-      strcpy(text_nowhitespace, text);
-      RemoveSpaces((char*) text_nowhitespace);
-      if (strncmp(text_nowhitespace, "", strlen(text)))
-	printf("%s\n", text);
-    } else {
-      printf("<%s>", tag_name);
-    }
-
-    // print children
-    print_tree(tree, myhtml_node_child(node));
-    node = myhtml_node_next(node);
-    }
-}
-
-int main()
-{
-  char *html =
-    "<p>Welcome<p>test</p</p>"
-    "<ul>"
-    "  <li>My Item #1</li>"
-    "  <li>My Item #2</li>"
-    "</ul>"
-    "<div>"
-    "Welcome to my world"
-    "</div>";
   
-  // basic init
-  myhtml_t* myhtml = myhtml_create();
-  myhtml_init(myhtml, MyHTML_OPTIONS_DEFAULT, 1, 0);
+  clock_t begin = clock(); // Get start time
 
-  // init tree
-  myhtml_tree_t* tree = myhtml_tree_create();
-  myhtml_tree_init(tree, myhtml);
+  // Load HTML file and convert it to
+  // markdown in four lines of code. 
+  char *filename = argv[1];
+  HtmlObject html = load_html_from_file( filename );
+  mdpanda_to_markdown( html );
+  destroy_html_object( html );
 
-  // parse html
-  myhtml_parse(tree, MyENCODING_UTF_8, html, strlen(html));
-
-  // print tree
-  myhtml_tree_node_t *node = myhtml_tree_get_node_body(tree);
-  print_tree(tree, myhtml_node_child(node));
-
-  // release resources
-  myhtml_tree_destroy(tree);
-  myhtml_destroy(myhtml);
+  clock_t end = clock();   // Get end time
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  if ( showParseTime )
+    printf("\n<!-- Generated markdown in %f seconds. -->\n", time_spent);
 
   return 0;
 }
-
-
-#ifdef __cplusplus
-}
-#endif
