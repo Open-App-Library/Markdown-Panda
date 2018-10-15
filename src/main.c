@@ -22,7 +22,8 @@ int main(int argc, char **argv)
   // markdown in four lines of code. 
   char *filename = argv[1];
   HtmlObject html = load_html_from_file( filename );
-  mdpanda_to_markdown( html );
+  char *toMarkdown = mdpanda_to_markdown( html );
+  printf("%s", toMarkdown);
   destroy_html_object( html );
 
   clock_t end = clock();   // Get end time

@@ -2,38 +2,75 @@
 #include "helper.h"
 #include "htmlutils.h"
 
-void processText(char *text, char *pname)
+typedef struct {
+  char *prepend;
+  char *append;
+} AppendPrependData_t;
+
+AppendPrependData_t getAppendPrepend(char *tag)
+{
+  AppendPrependData_t data = { "", "" };
+  int tagID = get_tag_id( tag );
+
+  if ( tagID > 0 && tagID <= 6 ) {
+    char *heading_prefix = "";
+    for (int i = 0; i < tagID; i++)
+      heading_prefix = string_append(heading_prefix, "#");
+    heading_prefix = string_append(heading_prefix, " ");
+    data.prepend = heading_prefix;
+  }
+  else if ( tagID == TAG_BOLD ) {
+    data.prepend = "**"; data.append = "** ";
+  }
+  else if ( tagID == TAG_ITALIC ) {
+    data.prepend = "*"; data.append = "* ";
+  }
+  return data;
+}
+
+char *processText(char *text, char *pname)
 {
   int tagID = get_tag_id(pname);
+  if ( tagID > 0 && tagID <= 6 ) {
+    char *heading_prefix = "";
+    for (int i = 0; i < tagID; i++)
+      heading_prefix = string_append(heading_prefix, "#");
+    heading_prefix = string_append(heading_prefix, " ");
+    return string_append(heading_prefix, text);
+  }
   if ( tagID == TAG_BOLD )
-    text = string_wrap(text, "**");
+    return string_wrap(text, "**");
+  if ( tagID == TAG_ITALIC )
+    return string_wrap(text, "*");
+  return text;
 }
 
 char *buildMarkdownString(char *currentString, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
   myhtml_tag_id_t tag_id   = myhtml_node_tag_id(node);
   char           *tag_name = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
-  char           *text = (char*) myhtml_node_text(node, NULL);
 
-  myhtml_tag_id_t     parent_tag_id   = myhtml_node_tag_id( myhtml_node_parent(node) );
-  char               *parent_tag_name = (char*) myhtml_tag_name_by_id(tree, parent_tag_id, NULL);
-  myhtml_tree_node_t *parentNode = myhtml_node_parent(node);
+  if (tag_id == MyHTML_TAG__TEXT) {
+    char           *text = (char*) myhtml_node_text(node, NULL);
 
-  while (parentNode) {
-    myhtml_tag_id_t pID   = myhtml_node_tag_id(parentNode);
-    char           *pNAME = (char*) myhtml_tag_name_by_id(tree, pID, NULL);
-    if ( strcmp(pNAME, "body") == 0 )
-      break;
+    myhtml_tag_id_t     parent_tag_id   = myhtml_node_tag_id( myhtml_node_parent(node) );
+    char               *parent_tag_name = (char*) myhtml_tag_name_by_id(tree, parent_tag_id, NULL);
+    myhtml_tree_node_t *parentNode = myhtml_node_parent(node);
 
-    processText(text, pNAME);
+    while (parentNode) {
+      myhtml_tag_id_t pID   = myhtml_node_tag_id(parentNode);
+      char           *pNAME = (char*) myhtml_tag_name_by_id(tree, pID, NULL);
+      if ( strcmp(pNAME, "body") == 0 )
+	break;
 
-    printf("%s, ", pNAME);
-    parentNode = myhtml_node_parent(parentNode);
+      text = processText(text, pNAME);
+
+      parentNode = myhtml_node_parent(parentNode);
+    }
+    printf("%s", text);
+    currentString = string_append(currentString, text);
   }
 
-  printf("%s\n", text);
-
-  currentString = string_append(currentString, text);
   return currentString;
 }
 
@@ -42,38 +79,32 @@ char *mdpanda_to_markdown(HtmlObject object)
   char               *markdown = "";
   myhtml_tree_t      *tree = object.tree;
   myhtml_tree_node_t *node = object.body;
-
+  int i = 0;
   while (node) {
-    myhtml_tag_id_t     tag_id          = myhtml_node_tag_id(node);
-    char               *tag_name        = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
-
-    boolean skip_node = false;
-
-    if ( !tag_name || strcmp( tag_name, "body" ) == 0 ) {
-      skip_node = true;
-    }
-    else if (tag_id == MyHTML_TAG__TEXT) {
+    myhtml_tag_id_t tag_id      = myhtml_node_tag_id(node);
+    char	   *tag_name    = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
+    i++;
+    // Process the node
+    AppendPrependData_t appendPrependData = getAppendPrepend( tag_name );
+    markdown = string_append(markdown, appendPrependData.prepend);
+    if (tag_id == MyHTML_TAG__TEXT) {
       char *text = (char*) myhtml_node_text(node, NULL);
-      char  text_cpy[ strlen(text)+1 ];
-      strcpy(text_cpy, text);
-      removeWhitespace(text_cpy);
-      if ( strcmp(text_cpy, "") == 0) // If string is not empty
-	skip_node = true;
-    } else {
-      skip_node = true;
+      markdown = string_append(markdown, text);
     }
 
-    if ( !skip_node ) {
-      buildMarkdownString( markdown, tree, node );
-    }
+    // Append the children
+    HtmlObject child = { object.myhtml_instance, tree, myhtml_node_child(node) };
+    markdown = string_append(markdown, mdpanda_to_markdown(child)); 
 
-    // print children
-    HtmlObject child;
-    child.myhtml_instance = object.myhtml_instance;
-    child.tree = tree;
-    child.body = myhtml_node_child(node);
+    // Closing
+    markdown = string_append(markdown, appendPrependData.append);
+    int html_tag_id = get_tag_id(tag_name);
+    if ( is_block_element(html_tag_id) )
+      markdown = string_append(markdown, "\n\n");
 
-    mdpanda_to_markdown(child);
+
+
+
     node = myhtml_node_next(node);
   }
   return markdown;
@@ -87,6 +118,10 @@ HtmlObject load_html_from_string(char *string)
   // init tree
   myhtml_tree_t* tree = myhtml_tree_create();
   myhtml_tree_init(tree, myhtml);
+  myhtml_tree_parse_flags_set(tree,
+			      MyHTML_TREE_PARSE_FLAGS_SKIP_WHITESPACE_TOKEN |
+			      MyHTML_TREE_PARSE_FLAGS_WITHOUT_DOCTYPE_IN_TREE
+			      );
 
   // parse html
   myhtml_parse(tree, MyENCODING_UTF_8, string, strlen(string));
