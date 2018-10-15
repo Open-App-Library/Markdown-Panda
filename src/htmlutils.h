@@ -22,6 +22,8 @@
 #define TAG_TABLE       15
 #define TAG_BLOCKQUOTE  16
 #define TAG_BR          17
+#define TAG_OL          18
+#define TAG_UL          19
 
 int get_tag_id(char *tag)
 {
@@ -59,6 +61,10 @@ int get_tag_id(char *tag)
     return TAG_BLOCKQUOTE;
   else if ( string_equals(tag, "br") )
     return TAG_BR;
+  else if ( string_equals(tag, "ol") )
+    return TAG_OL;
+  else if ( string_equals(tag, "ul") )
+    return TAG_UL;
   return 0;
 }
 
@@ -79,15 +85,17 @@ boolean tag_is_parent(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_n
 boolean is_block_element(int tag_id)
 {
   boolean is_heading = tag_id > 0 && tag_id <= 6;
-  if (is_heading                        || // If tag is a h1-h6
-      tag_id == TAG_IMG			||
-      tag_id == TAG_LI			||
-      tag_id == TAG_HR			||
-      tag_id == TAG_P			||
-      tag_id == TAG_PRE			||
-      tag_id == TAG_TABLE		||
-      tag_id == TAG_BLOCKQUOTE          ||
-      tag_id == TAG_BR)
+  if (is_heading                || // If tag is a h1-h6
+      tag_id == TAG_IMG		||
+      tag_id == TAG_LI		||
+      tag_id == TAG_HR		||
+      tag_id == TAG_P		||
+      tag_id == TAG_PRE		||
+      tag_id == TAG_TABLE	||
+      tag_id == TAG_BLOCKQUOTE  ||
+      tag_id == TAG_BR		||
+      tag_id == TAG_OL		||
+      tag_id == TAG_UL)
     return true;
   return false;
 }
