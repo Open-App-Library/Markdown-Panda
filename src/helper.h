@@ -4,21 +4,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "markdownpanda.h"
 
 typedef enum { False, True } boolean;
 
-static void removeWhitespace(char* source)
+/* static void removeWhitespace(char* source) */
+/* { */
+/*   char* i = source; */
+/*   char* j = source; */
+/*   while(*j != 0) */
+/*   { */
+/*     *i = *j++; */
+/*     if( *i != ' ' && *i != '\n' && *i != '\t') */
+/*       i++; */
+/*   } */
+/*   *i = 0; */
+/* } */
+
+static char *trimWhitespace(char *str)
 {
-  char* i = source;
-  char* j = source;
-  while(*j != 0)
-  {
-    *i = *j++;
-    if( *i != ' ' && *i != '\n' && *i != '\t')
-      i++;
-  }
-  *i = 0;
+  char *end;
+
+  // Trim leading space
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  // Write new null terminator character
+  end[1] = '\0';
+
+  return str;
 }
 
 static boolean string_equals(const char *s1, const char *s2)

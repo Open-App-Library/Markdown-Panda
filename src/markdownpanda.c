@@ -89,6 +89,10 @@ char *mdpanda_to_markdown(HtmlObject object)
     markdown = string_append(markdown, appendPrependData.prepend);
     if (tag_id == MyHTML_TAG__TEXT) {
       char *text = (char*) myhtml_node_text(node, NULL);
+      if ( tag_is_parent(TAG_BLOCKQUOTE, tree, node) ) {
+	text = trimWhitespace(text);
+	text = string_prepend(text, "> ");
+      }
       markdown = string_append(markdown, text);
     }
 

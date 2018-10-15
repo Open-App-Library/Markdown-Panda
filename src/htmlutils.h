@@ -1,6 +1,7 @@
 #ifndef HTMLUTILS_H
 #define HTMLUTILS_H
 
+#include <myhtml/api.h>
 #include "helper.h"
 
 #define TAG_OTHER	0
@@ -20,6 +21,7 @@
 #define TAG_PRE         14
 #define TAG_TABLE       15
 #define TAG_BLOCKQUOTE  16
+#define TAG_BR          17
 
 int get_tag_id(char *tag)
 {
@@ -55,7 +57,23 @@ int get_tag_id(char *tag)
     return TAG_TABLE;
   else if ( string_equals(tag, "blockquote") )
     return TAG_BLOCKQUOTE;
+  else if ( string_equals(tag, "br") )
+    return TAG_BR;
   return 0;
+}
+
+boolean tag_is_parent(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
+{
+  myhtml_tree_node_t *parent = myhtml_node_parent(node);
+  while (parent) {
+    myhtml_tag_id_t tag_id      = myhtml_node_tag_id(parent);
+    char	   *tag_name    = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
+    int             html_tag_id = get_tag_id(tag_name);
+    if (html_tag_id == target_html_tag_id)
+      return true;
+    parent = myhtml_node_parent(parent);
+  }
+  return false;
 }
 
 boolean is_block_element(int tag_id)
@@ -68,7 +86,8 @@ boolean is_block_element(int tag_id)
       tag_id == TAG_P			||
       tag_id == TAG_PRE			||
       tag_id == TAG_TABLE		||
-      tag_id == TAG_BLOCKQUOTE)
+      tag_id == TAG_BLOCKQUOTE          ||
+      tag_id == TAG_BR)
     return true;
   return false;
 }
