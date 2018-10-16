@@ -4,6 +4,8 @@
 
 boolean ordered_list_mode = false;
 int     ordered_list_index = 1;
+int     list_nesting       = 0;
+boolean should_add_newline_to_child_list;
 
 typedef struct {
   char *prepend;
@@ -36,7 +38,7 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if (href_attr) {
       const char *attr_char = myhtml_attribute_value(href_attr, NULL);
       if (attr_char)
-	data.append = string_append(data.append, attr_char);   
+	data.append = string_append(data.append, attr_char);
     }
     data.append = string_append(data.append, ")");
     break;
@@ -83,12 +85,26 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
       	data.prepend = "- ";
       	data.append = "";
       }
+      if ( list_nesting > 1) {
+	int indentation = 2;
+	int curLineIndentation = list_nesting * indentation - 2;
+	char spaces[curLineIndentation+2];
+	spaces[0] = '\n';
+	for (int i = 1; i < curLineIndentation+1; i++) {
+	  spaces[i] = ' ';
+	}
+	spaces[curLineIndentation+1] = '\0';
+	data.prepend = string_prepend(data.prepend, spaces);
+	should_add_newline_to_child_list = false;
+      }
       break;
   case TAG_TEXT: {
     char *text = (char*) myhtml_node_text(node, NULL);
     if ( tag_is_parent(TAG_BLOCKQUOTE, tree, node) ) {
       text = trimWhitespace(text);
       text = string_prepend(text, "> ");
+    } else if ( tag_is_parent(TAG_LI, tree, node) ) {
+      text = trimWhitespace(text);
     }
     data.prepend = "";
     data.prepend = string_append(data.prepend, text);
@@ -120,6 +136,11 @@ char *mdpanda_to_markdown(HtmlObject object)
     if (html_tag_id == TAG_OL)
       ordered_list_mode = true;
 
+    if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
+      list_nesting++;
+      should_add_newline_to_child_list = true;
+    }
+
     // Process the node
     AppendPrependData_t appendPrependData = getAppendPrepend( tag_name, tree, node );
     markdown = string_append(markdown, appendPrependData.prepend);
@@ -129,18 +150,24 @@ char *mdpanda_to_markdown(HtmlObject object)
     markdown = string_append(markdown, mdpanda_to_markdown(child)); 
 
     // Closing
-    if (html_tag_id == TAG_OL) {
-      ordered_list_mode = false;
-      ordered_list_index = 1;
-    }
     markdown = string_append(markdown, appendPrependData.append);
 
     if ( html_tag_id == TAG_LI ||
 	 html_tag_id == TAG_UL ||
-	 html_tag_id == TAG_OL)
-      markdown = string_append(markdown, "\n");
+	 html_tag_id == TAG_OL) {
+      if ( !(html_tag_id == TAG_UL && list_nesting > 1) &&
+	   !(html_tag_id == TAG_LI && list_nesting > 1))
+	markdown = string_append(markdown, "\n");
+    }
     else if ( is_block_element(html_tag_id) )
       markdown = string_append(markdown, "\n\n");
+
+    if (html_tag_id == TAG_OL) {
+      ordered_list_mode = false;
+      ordered_list_index = 1;
+    }
+    if (html_tag_id == TAG_OL || html_tag_id == TAG_UL)
+      list_nesting--;
 
     node = myhtml_node_next(node);
   }
