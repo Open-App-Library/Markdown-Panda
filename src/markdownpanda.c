@@ -26,12 +26,18 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
   case TAG_HR:
     data.prepend = "---"; data.append = "";
     break;
+  case TAG_STRIKE:
+    data.prepend = "~~"; data.append = "~~";
+    break;
   case TAG_LINK:
     data.prepend = "[";
     data.append = "](";
     myhtml_tree_attr_t *href_attr = myhtml_attribute_by_key(node, "href", 4);
-    const char *attr_char = myhtml_attribute_value(href_attr, NULL);
-    data.append = string_append(data.append, attr_char);
+    if (href_attr) {
+      const char *attr_char = myhtml_attribute_value(href_attr, NULL);
+      if (attr_char)
+	data.append = string_append(data.append, attr_char);   
+    }
     data.append = string_append(data.append, ")");
     break;
   case TAG_IMG:

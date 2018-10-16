@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/doug/Code/c/markdownpanda",
-  "command": "/usr/bin/cc  -I/home/doug/Code/c/markdownpanda/include    -o CMakeFiles/mdpanda.dir/src/main.c.o   -c /home/doug/Code/c/markdownpanda/src/main.c",
-  "file": "/home/doug/Code/c/markdownpanda/src/main.c"
-}
-]

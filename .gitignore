@@ -9,3 +9,5 @@ myhtml-dist/
 # Includes and Libs
 include/my*
 lib/
+
+compile_commands.json

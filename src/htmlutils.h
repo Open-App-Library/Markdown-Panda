@@ -26,6 +26,7 @@
 #define TAG_OL          18
 #define TAG_UL          19
 #define TAG_CODE        20
+#define TAG_STRIKE      21
 
 int get_tag_id(char *tag)
 {
@@ -70,7 +71,9 @@ int get_tag_id(char *tag)
   else if ( string_equals(tag, "ul") )
     return TAG_UL;
   else if ( string_equals(tag, "code") )
-    return TAG_CODE;
+    return TAG_CODE; 
+  else if ( string_equals(tag, "strike") )
+    return TAG_STRIKE; 
   //printf("[WARNING] Could not find tag '%s'\n", tag);
   return -1;
 }
