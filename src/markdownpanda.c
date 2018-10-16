@@ -10,23 +10,67 @@ typedef struct {
   char *append;
 } AppendPrependData_t;
 
-AppendPrependData_t getAppendPrepend(char *tag)
+AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
   AppendPrependData_t data = { "", "" };
   int tagID = get_tag_id( tag );
+  myhtml_tag_id_t node_tagID = myhtml_node_tag_id(node);
 
-  if ( tagID > 0 && tagID <= 6 ) {
-    char *heading_prefix = "";
-    for (int i = 0; i < tagID; i++)
-      heading_prefix = string_append(heading_prefix, "#");
-    heading_prefix = string_append(heading_prefix, " ");
-    data.prepend = heading_prefix;
+  switch ( tagID ) {
+  case TAG_BOLD:
+    data.prepend = "**"; data.append = "**";
+    break;
+  case TAG_ITALIC:
+    data.prepend = "*"; data.append = "*";
+    break;
+  case TAG_HR:
+    data.prepend = "---"; data.append = "";
+    break;
+  case TAG_CODE:
+    if ( !tag_is_parent(TAG_PRE, tree, node) ) {
+      data.prepend = "`"; data.append = "`";
+    } else {
+      data.prepend = "";
+      if ( myhtml_node_next(node) ) {
+	data.append = "\n";
+      } else {
+	data.append = "";
+      }
+    }
+    break;
+  case TAG_PRE:
+    data.prepend = "```\n"; data.append = "\n```";
+    break;
+  case TAG_LI:
+      if ( tag_is_parent(TAG_OL, tree, node) ) {
+      	char numberstr[4];
+      	sprintf(numberstr, "%i", ordered_list_index);
+      	data.prepend = string_append(numberstr, ". ");
+      	data.append = "";
+      	ordered_list_index++;
+      } else {
+      	data.prepend = "- ";
+      	data.append = "";
+      }
+      break;
+  case TAG_TEXT: {
+    char *text = (char*) myhtml_node_text(node, NULL);
+    if ( tag_is_parent(TAG_BLOCKQUOTE, tree, node) ) {
+      text = trimWhitespace(text);
+      text = string_prepend(text, "> ");
+    }
+    data.prepend = "";
+    data.prepend = string_append(data.prepend, text);
+    break;
   }
-  else if ( tagID == TAG_BOLD ) {
-    data.prepend = "**"; data.append = "** ";
-  }
-  else if ( tagID == TAG_ITALIC ) {
-    data.prepend = "*"; data.append = "* ";
+  default:
+    if ( tagID > 0 && tagID <= 6 ) {
+      char *heading_prefix = "";
+      for (int i = 0; i < tagID; i++)
+	heading_prefix = string_append(heading_prefix, "#");
+      heading_prefix = string_append(heading_prefix, " ");
+      data.prepend = heading_prefix;
+    }
   }
   return data;
 }
@@ -46,28 +90,8 @@ char *mdpanda_to_markdown(HtmlObject object)
       ordered_list_mode = true;
 
     // Process the node
-    AppendPrependData_t appendPrependData = getAppendPrepend( tag_name );
-    if (html_tag_id == TAG_LI) {
-      if ( tag_is_parent(TAG_OL, tree, node) ) {
-	char numberstr[4];
-	sprintf(numberstr, "%i", ordered_list_index);
-	appendPrependData.prepend = string_append(numberstr, ". ");
-	appendPrependData.append = "";
-	ordered_list_index++;
-      } else {
-	appendPrependData.prepend = "- ";
-	appendPrependData.append = "";
-      }
-    }
+    AppendPrependData_t appendPrependData = getAppendPrepend( tag_name, tree, node );
     markdown = string_append(markdown, appendPrependData.prepend);
-    if (tag_id == MyHTML_TAG__TEXT) {
-      char *text = (char*) myhtml_node_text(node, NULL);
-      if ( tag_is_parent(TAG_BLOCKQUOTE, tree, node) ) {
-	text = trimWhitespace(text);
-	text = string_prepend(text, "> ");
-      }
-      markdown = string_append(markdown, text);
-    }
 
     // Append the children
     HtmlObject child = { object.myhtml_instance, tree, myhtml_node_child(node) };

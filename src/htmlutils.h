@@ -4,7 +4,8 @@
 #include <myhtml/api.h>
 #include "helper.h"
 
-#define TAG_OTHER	0
+#define TAG_OTHER	-1
+#define TAG_TEXT	0
 #define TAG_H1		1
 #define TAG_H2		2
 #define TAG_H3		3
@@ -24,10 +25,13 @@
 #define TAG_BR          17
 #define TAG_OL          18
 #define TAG_UL          19
+#define TAG_CODE        20
 
 int get_tag_id(char *tag)
 {
-  if ( string_equals(tag, "h1") )
+  if      ( string_equals(tag, "-text") )
+    return TAG_TEXT;
+  else if ( string_equals(tag, "h1") )
     return TAG_H1;
   else if ( string_equals(tag, "h2") )
     return TAG_H2;
@@ -65,7 +69,10 @@ int get_tag_id(char *tag)
     return TAG_OL;
   else if ( string_equals(tag, "ul") )
     return TAG_UL;
-  return 0;
+  else if ( string_equals(tag, "code") )
+    return TAG_CODE;
+  //printf("[WARNING] Could not find tag '%s'\n", tag);
+  return -1;
 }
 
 boolean tag_is_parent(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
@@ -75,8 +82,10 @@ boolean tag_is_parent(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_n
     myhtml_tag_id_t tag_id      = myhtml_node_tag_id(parent);
     char	   *tag_name    = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
     int             html_tag_id = get_tag_id(tag_name);
-    if (html_tag_id == target_html_tag_id)
+
+    if (html_tag_id == target_html_tag_id) {
       return true;
+    }
     parent = myhtml_node_parent(parent);
   }
   return false;
@@ -94,7 +103,7 @@ boolean is_block_element(int tag_id)
       tag_id == TAG_BLOCKQUOTE  ||
       tag_id == TAG_BR		||
       tag_id == TAG_OL		||
-      tag_id == TAG_UL)
+      tag_id == TAG_UL)            // Note that LI is not included even though it is a block element. It is not needed here.
     return true;
   return false;
 }
