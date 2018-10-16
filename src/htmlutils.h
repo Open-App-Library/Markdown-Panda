@@ -85,7 +85,6 @@ boolean node_parent_is_id(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tr
   int       html_tag_id  = get_tag_id(tag_name);
   if ( html_tag_id == target_html_tag_id )
     return true;
-  printf("Sorry. Node parent is %i\n", html_tag_id);
   return false;
 }
 
