@@ -49,8 +49,11 @@ char *mdpanda_to_markdown(HtmlObject object)
     AppendPrependData_t appendPrependData = getAppendPrepend( tag_name );
     if (html_tag_id == TAG_LI) {
       if ( tag_is_parent(TAG_OL, tree, node) ) {
-	appendPrependData.prepend = "- ";
+	char numberstr[4];
+	sprintf(numberstr, "%i", ordered_list_index);
+	appendPrependData.prepend = string_append(numberstr, ". ");
 	appendPrependData.append = "";
+	ordered_list_index++;
       } else {
 	appendPrependData.prepend = "- ";
 	appendPrependData.append = "";
