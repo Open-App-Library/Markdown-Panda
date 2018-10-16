@@ -78,6 +78,17 @@ int get_tag_id(char *tag)
   return -1;
 }
 
+boolean node_parent_is_id(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
+{
+  myhtml_tag_id_t tag_id = myhtml_node_tag_id( myhtml_node_parent(node));
+  char	   *tag_name     = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
+  int       html_tag_id  = get_tag_id(tag_name);
+  if ( html_tag_id == target_html_tag_id )
+    return true;
+  printf("Sorry. Node parent is %i\n", html_tag_id);
+  return false;
+}
+
 boolean tag_is_parent(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
   myhtml_tree_node_t *parent = myhtml_node_parent(node);

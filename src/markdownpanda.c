@@ -2,8 +2,6 @@
 #include "helper.h"
 #include "htmlutils.h"
 
-boolean ordered_list_mode = false;
-int     ordered_list_index = 1;
 int     list_nesting       = 0;
 boolean should_add_newline_to_child_list;
 
@@ -75,12 +73,17 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     data.prepend = "```\n"; data.append = "\n```";
     break;
   case TAG_LI:
-      if ( tag_is_parent(TAG_OL, tree, node) ) {
+      if ( node_parent_is_id(TAG_OL, tree, node) ) {
       	char numberstr[4];
-      	sprintf(numberstr, "%i", ordered_list_index);
+	int index = 1;
+	myhtml_tree_node_t *other_list_item = myhtml_node_prev(node);
+	while (other_list_item) {
+	  index++;
+	  other_list_item = myhtml_node_prev( other_list_item );
+	}
+      	sprintf(numberstr, "%i", index);
       	data.prepend = string_append(numberstr, ". ");
       	data.append = "";
-      	ordered_list_index++;
       } else {
       	data.prepend = "- ";
       	data.append = "";
@@ -133,8 +136,8 @@ char *mdpanda_to_markdown(HtmlObject object)
     char	   *tag_name    = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
     int html_tag_id = get_tag_id(tag_name);
 
-    if (html_tag_id == TAG_OL)
-      ordered_list_mode = true;
+    myhtml_tag_id_t pid      = myhtml_node_tag_id(myhtml_node_parent(node));
+    char	   *pname    = (char*) myhtml_tag_name_by_id(tree, pid, NULL);
 
     if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
       list_nesting++;
@@ -156,18 +159,16 @@ char *mdpanda_to_markdown(HtmlObject object)
 	 html_tag_id == TAG_UL ||
 	 html_tag_id == TAG_OL) {
       if ( !(html_tag_id == TAG_UL && list_nesting > 1) &&
+	   !(html_tag_id == TAG_OL && list_nesting > 1) &&
 	   !(html_tag_id == TAG_LI && list_nesting > 1))
 	markdown = string_append(markdown, "\n");
     }
     else if ( is_block_element(html_tag_id) )
       markdown = string_append(markdown, "\n\n");
 
-    if (html_tag_id == TAG_OL) {
-      ordered_list_mode = false;
-      ordered_list_index = 1;
-    }
-    if (html_tag_id == TAG_OL || html_tag_id == TAG_UL)
+    if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
       list_nesting--;
+    }
 
     node = myhtml_node_next(node);
   }
