@@ -87,7 +87,6 @@ boolean is_block_element(int tag_id)
   boolean is_heading = tag_id > 0 && tag_id <= 6;
   if (is_heading                || // If tag is a h1-h6
       tag_id == TAG_IMG		||
-      tag_id == TAG_LI		||
       tag_id == TAG_HR		||
       tag_id == TAG_P		||
       tag_id == TAG_PRE		||

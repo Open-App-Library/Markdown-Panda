@@ -80,11 +80,12 @@ char *mdpanda_to_markdown(HtmlObject object)
     }
     markdown = string_append(markdown, appendPrependData.append);
 
-    if ( is_block_element(html_tag_id) )
+    if ( html_tag_id == TAG_LI ||
+	 html_tag_id == TAG_UL ||
+	 html_tag_id == TAG_OL)
+      markdown = string_append(markdown, "\n");
+    else if ( is_block_element(html_tag_id) )
       markdown = string_append(markdown, "\n\n");
-
-
-
 
     node = myhtml_node_next(node);
   }
