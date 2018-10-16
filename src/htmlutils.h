@@ -4,7 +4,7 @@
 #include <myhtml/api.h>
 #include "helper.h"
 
-#define TAG_OTHER	-1
+#define TAG_OTHER      -1
 #define TAG_TEXT	0
 #define TAG_H1		1
 #define TAG_H2		2
@@ -27,6 +27,9 @@
 #define TAG_UL          19
 #define TAG_CODE        20
 #define TAG_STRIKE      21
+#define TAG_TR		22
+#define TAG_TH		23
+#define TAG_TD		24
 
 int get_tag_id(char *tag)
 {
@@ -71,21 +74,32 @@ int get_tag_id(char *tag)
   else if ( string_equals(tag, "ul") )
     return TAG_UL;
   else if ( string_equals(tag, "code") )
-    return TAG_CODE; 
+    return TAG_CODE;
   else if ( string_equals(tag, "strike") )
-    return TAG_STRIKE; 
+    return TAG_STRIKE;
+  else if ( string_equals(tag, "tr") )
+    return TAG_TR;
+  else if ( string_equals(tag, "th") )
+    return TAG_TH;
+  else if ( string_equals(tag, "td") )
+    return TAG_TD;
   //printf("[WARNING] Could not find tag '%s'\n", tag);
   return -1;
 }
 
-boolean node_parent_is_id(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
+boolean node_is_id(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
-  myhtml_tag_id_t tag_id = myhtml_node_tag_id( myhtml_node_parent(node));
+  myhtml_tag_id_t tag_id = myhtml_node_tag_id( node );
   char	   *tag_name     = (char*) myhtml_tag_name_by_id(tree, tag_id, NULL);
   int       html_tag_id  = get_tag_id(tag_name);
   if ( html_tag_id == target_html_tag_id )
     return true;
   return false;
+}
+
+boolean node_parent_is_id(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)
+{
+  return node_is_id( target_html_tag_id, tree, myhtml_node_parent(node) );
 }
 
 boolean tag_is_parent(int target_html_tag_id, myhtml_tree_t *tree, myhtml_tree_node_t *node)

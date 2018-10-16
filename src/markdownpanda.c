@@ -10,6 +10,14 @@ typedef struct {
   char *append;
 } AppendPrependData_t;
 
+typedef struct {
+  int *colSizes; // Array
+  int  colCount;
+  boolean created;
+} MarkdownTable;
+
+MarkdownTable current_table;
+
 AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
   AppendPrependData_t data = { "", "" };
@@ -72,6 +80,40 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
   case TAG_PRE:
     data.prepend = "```\n"; data.append = "\n```";
     break;
+  case TAG_TR:
+    if ( node_is_id(TAG_TH, tree, myhtml_node_child(node) ) ) {
+      data.append = "\n";
+      for (int i = 0; i < current_table.colCount; i++) {
+	data.append = string_append(data.append, "|");
+	for (int s = 0; s < current_table.colSizes[i] + 2; s++) { // +2 for two spaces on both siide of table to give nice space
+	  data.append = string_append(data.append, "-");
+	}
+      }
+      data.append = string_append(data.append, "|\n");
+    } else if ( myhtml_node_next(node) ) {
+      data.append = "\n";
+    }
+    break;
+  case TAG_TD:
+    if ( !myhtml_node_next(node) ) {
+      data.prepend = " | ";
+      data.append  = " |";
+    }
+    else if ( myhtml_node_prev(node) )
+      data.prepend = " | ";
+    else
+      data.prepend = "| ";
+    break;
+  case TAG_TH:
+    if ( !myhtml_node_next(node) ) {
+      data.prepend = " | ";
+      data.append  = " |";
+    }
+    else if ( myhtml_node_prev(node) )
+      data.prepend = " | ";
+    else
+      data.prepend = "| ";
+    break;
   case TAG_LI:
       if ( node_parent_is_id(TAG_OL, tree, node) ) {
       	char numberstr[4];
@@ -103,15 +145,36 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
       break;
   case TAG_TEXT: {
     char *text = (char*) myhtml_node_text(node, NULL);
-    if ( tag_is_parent(TAG_BLOCKQUOTE, tree, node) ) {
+    boolean blockquote_parent = tag_is_parent(TAG_BLOCKQUOTE, tree, node);
+    boolean li_parent = tag_is_parent(TAG_LI, tree, node);
+    boolean table_parent = tag_is_parent(TAG_TABLE, tree, node);
+    if ( blockquote_parent ) {
       text = trimWhitespace(text);
       text = string_prepend(text, "> ");
-    } else if ( tag_is_parent(TAG_LI, tree, node) ) {
+    } else if ( li_parent || table_parent) {
       text = trimWhitespace(text);
+    }
+    if ( table_parent ) {
+      int curColIndex = 0;
+      myhtml_tree_node_t *prevCell = myhtml_node_prev( myhtml_node_parent(node) );
+      if (curColIndex <= current_table.colCount) {
+	while (prevCell) {
+	  curColIndex++;
+	  prevCell = myhtml_node_prev(prevCell);
+	}
+	int textLen = strlen(text); // 2 for the two spaces added on the side for paddingo
+	int spacesToAdd = current_table.colSizes[curColIndex] - textLen;
+	for (int s = 0; s < spacesToAdd; s++) {
+	  data.append = string_append(data.append, " ");
+	}
+      } else {
+	puts("ERROR! Counted a table column count greater than exists. Exiting...");
+	exit( EXIT_FAILURE );
+      }
     }
     data.prepend = "";
     data.prepend = string_append(data.prepend, text);
-    break;
+    break;   
   }
   default:
     if ( tagID > 0 && tagID <= 6 ) {
@@ -144,6 +207,54 @@ char *mdpanda_to_markdown(HtmlObject object)
       should_add_newline_to_child_list = true;
     }
 
+    // Hacky fix for tfoot no-new-line behavior
+    if (string_equals(tag_name, "tfoot")) {
+      markdown = string_append(markdown, "\n");
+    }
+
+    if (html_tag_id == TAG_TABLE && !current_table.created ) {
+      myhtml_tree_node_t *thead_or_tbody = myhtml_node_child(node);
+      while (thead_or_tbody) {
+	myhtml_tree_node_t *tr = myhtml_node_child(thead_or_tbody);
+	while (tr) {
+	  // Loop through 'th' or 'td's (cells)
+	  myhtml_tree_node_t *cell = myhtml_node_child(tr);
+	  int colIndex = 0;
+	  while (cell) {
+	    myhtml_tree_node_t *cellChild = myhtml_node_child(cell);
+	    while (cellChild) {
+	      myhtml_tag_id_t cellChildID = myhtml_node_tag_id(cellChild);
+	      char *tag = (char*) myhtml_tag_name_by_id(tree, cellChildID, NULL);
+	      if ( string_equals(tag, "-text") ) {
+		char *text = (char*) myhtml_node_text(cellChild, NULL);
+		if (text) {
+		  if (current_table.colCount < colIndex+1) {
+		    int *newColSizes = malloc(sizeof(int) * colIndex+1);
+		    for (int i = 0; i < current_table.colCount; i++) {
+		      newColSizes[i] = current_table.colSizes[i];
+		    }
+		    free(current_table.colSizes);
+		    current_table.colSizes = newColSizes;
+		    current_table.colCount = colIndex + 1;
+		  }
+		  int strLen = strlen(text);
+		  if (strLen > current_table.colSizes[colIndex]) {
+		    current_table.colSizes[colIndex] = strLen;
+		  }
+		}
+	      }
+	      cellChild = myhtml_node_child(cellChild);
+	    }
+	    colIndex++;
+	    cell = myhtml_node_next(cell);
+	  }
+	  tr = myhtml_node_next(tr);
+	}
+	thead_or_tbody = myhtml_node_next(thead_or_tbody);
+      }
+      current_table.created = true;
+    }
+
     // Process the node
     AppendPrependData_t appendPrependData = getAppendPrepend( tag_name, tree, node );
     markdown = string_append(markdown, appendPrependData.prepend);
@@ -155,6 +266,14 @@ char *mdpanda_to_markdown(HtmlObject object)
     // Closing
     markdown = string_append(markdown, appendPrependData.append);
 
+    // Tables
+    if (html_tag_id == TAG_TABLE) {
+      free( current_table.colSizes );
+      current_table.colCount = 0;
+      current_table.created = false;
+    }
+
+    // Newline
     if ( html_tag_id == TAG_LI ||
 	 html_tag_id == TAG_UL ||
 	 html_tag_id == TAG_OL) {
