@@ -5,13 +5,13 @@ MarkdownPanda: WORK IN PROGRESS
 **Table of Contents**
 
 - [Usage](#usage)
-    - [C](#c)
-    - [C++](#c)
-    - [C++ / Qt5](#c--qt5)
-    - [Manual Installation (Linux / Mac OS X)](#manual-installation-linux--mac-os-x)
-        - [Installing dependencies](#installing-dependencies)
-        - [Compiling the library](#compiling-the-library)
-    - [How to compile your program](#how-to-compile-your-program)
+  - [C](#c)
+  - [C++](#c)
+  - [C++ / Qt5](#c--qt5)
+- [Manual Installation (Linux / Mac OS X)](#manual-installation-linux--mac-os-x)
+  - [Installing dependencies](#installing-dependencies)
+  - [Compiling the library](#compiling-the-library)
+- [How to compile your program](#how-to-compile-your-program)
 
 <!-- markdown-toc end -->
 
