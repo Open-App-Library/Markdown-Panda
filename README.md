@@ -1,7 +1,6 @@
 MarkdownPanda: WORK IN PROGRESS
 -------------------------------
 
-<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [Usage](#usage)
@@ -12,8 +11,6 @@ MarkdownPanda: WORK IN PROGRESS
   - [Installing dependencies](#installing-dependencies)
   - [Compiling the library](#compiling-the-library)
 - [How to compile your program](#how-to-compile-your-program)
-
-<!-- markdown-toc end -->
 
 ## Usage
 
