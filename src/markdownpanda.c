@@ -331,7 +331,11 @@ HtmlObject load_html_from_string(char *string)
 HtmlObject load_html_from_file(char *filename)
 {
   char *textOfFile = file_to_string(filename);
-  HtmlObject obj = load_html_from_string( textOfFile );
+  HtmlObject obj;
+  if (textOfFile)
+    obj = load_html_from_string( textOfFile );
+  else
+    obj = load_html_from_string( HTML_FILE_NOT_FOUND_MESSAGE );
   free(textOfFile);
   return obj;
 }

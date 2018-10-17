@@ -9,19 +9,6 @@
 
 typedef enum { False = 0, True = 1 } boolean;
 
-/* static void removeWhitespace(char* source) */
-/* { */
-/*   char* i = source; */
-/*   char* j = source; */
-/*   while(*j != 0) */
-/*   { */
-/*     *i = *j++; */
-/*     if( *i != ' ' && *i != '\n' && *i != '\t') */
-/*       i++; */
-/*   } */
-/*   *i = 0; */
-/* } */
-
 static char *trimWhitespace(char *str)
 {
   char *end;
@@ -62,21 +49,6 @@ static char* string_append(const char *s1, const char *s2)
     fprintf(stderr,"malloc failed!\n");
     exit( EXIT_FAILURE );
   }
-
-  /* puts("WORKING"); */
-  /* printf("len1 %lu len2 %lu\n", strlen(s1), strlen(s2)); */
-  /* char *result; */
-
-  /* if ( (result = malloc( sizeof(char) * (strlen(s1) + strlen(s2) + 1) )) != NULL ) { */
-    
-  /* } */
-
-  /* puts("char result"); */
-  /* strcpy(result, s1); */
-  /* puts("strcp 1"); */
-  /* strcat(result, s2); */
-  /* puts("strcp 2"); */
-  /* puts("MADE IT TO END"); */
   return new_str;
 }
 
@@ -101,8 +73,9 @@ static char *file_to_string(char *filename) {
   FILE *f = fopen (filename, "rb");
 
   if(f == NULL) {
-    fprintf(stderr, "Can't open file: %s\n", filename);
-    exit(EXIT_FAILURE);
+    // Optionally print error message
+    // fprintf(stderr, "Can't open file: %s\n", filename);
+    return NULL;
   } else {
     fseek (f, 0, SEEK_END);
     length = ftell (f);
@@ -119,7 +92,7 @@ static char *file_to_string(char *filename) {
   if (buffer) {
     return buffer;
   }
-  return "";
+  return NULL;
 }
 
 #endif

@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#define HTML_FILE_NOT_FOUND_MESSAGE "<h1>ERROR: HTML File not found</h1>"
+
 typedef struct myhtml myhtml_t;
 typedef struct myhtml_tree myhtml_tree_t;
 typedef struct myhtml_tree_node myhtml_tree_node_t;
