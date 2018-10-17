@@ -4,10 +4,10 @@
 
 # Folders
 cmake/
-myhtml-dist/
+dist/
 
 # Includes and Libs
-include/my*
+include/
 lib/
 
 compile_commands.json
