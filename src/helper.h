@@ -53,10 +53,31 @@ static boolean string_equals(const char *s1, const char *s2)
 
 static char* string_append(const char *s1, const char *s2)
 {
-  char *result = malloc(strlen(s1) + strlen(s2) + 1); // +1 for the null-terminator
-  strcpy(result, s1);
-  strcat(result, s2);
-  return result;
+  char * new_str ;
+  if((new_str = malloc(strlen(s1)+strlen(s2)+1)) != NULL){
+    new_str[0] = '\0';   // ensures the memory is an empty string
+    strcat(new_str,s1);
+    strcat(new_str,s2);
+  } else {
+    fprintf(stderr,"malloc failed!\n");
+    exit( EXIT_FAILURE );
+  }
+
+  /* puts("WORKING"); */
+  /* printf("len1 %lu len2 %lu\n", strlen(s1), strlen(s2)); */
+  /* char *result; */
+
+  /* if ( (result = malloc( sizeof(char) * (strlen(s1) + strlen(s2) + 1) )) != NULL ) { */
+    
+  /* } */
+
+  /* puts("char result"); */
+  /* strcpy(result, s1); */
+  /* puts("strcp 1"); */
+  /* strcat(result, s2); */
+  /* puts("strcp 2"); */
+  /* puts("MADE IT TO END"); */
+  return new_str;
 }
 
 static char* string_prepend(const char *s1, const char *s2)
@@ -75,26 +96,30 @@ static char* string_wrap(const char *s1, const char *wrap)
 }
 
 static char *file_to_string(char *filename) {
-  char * buffer = 0;
+  char *buffer = 0;
   long length;
-  FILE * f = fopen (filename, "rb");
+  FILE *f = fopen (filename, "rb");
 
-  if (f) {
+  if(f == NULL) {
+    fprintf(stderr, "Can't open file: %s\n", filename);
+    exit(EXIT_FAILURE);
+  } else {
     fseek (f, 0, SEEK_END);
     length = ftell (f);
     fseek (f, 0, SEEK_SET);
-    buffer = malloc (length);
-    if (buffer)
-      {
-	fread (buffer, 1, length, f);
-      }
+    buffer = malloc(length+1);
+    if (buffer) {
+      fread (buffer, 1, length, f);
+    }
     fclose (f);
   }
+
+  buffer[length] = '\0';
 
   if (buffer) {
     return buffer;
   }
-  return NULL;
+  return "";
 }
 
 #endif

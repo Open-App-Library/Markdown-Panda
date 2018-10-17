@@ -4,6 +4,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifdef _WIN32
+    #define MyCORE_FMT_Z "%Iu"
+#else
+    #define MyCORE_FMT_Z "%zu"
+#endif
+  
 #include <myhtml/api.h>
 
   typedef struct {

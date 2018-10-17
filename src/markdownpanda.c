@@ -84,10 +84,10 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if ( node_is_id(TAG_TH, tree, myhtml_node_child(node) ) ) {
       data.append = "\n";
       for (int i = 0; i < current_table.colCount; i++) {
-	data.append = string_append(data.append, "|");
-	for (int s = 0; s < current_table.colSizes[i] + 2; s++) { // +2 for two spaces on both siide of table to give nice space
-	  data.append = string_append(data.append, "-");
-	}
+    	data.append = string_append(data.append, "|");
+    	for (int s = 0; s < current_table.colSizes[i] + 2; s++) { // +2 for two spaces on both siide of table to give nice space
+    	  data.append = string_append(data.append, "-");
+    	}
       }
       data.append = string_append(data.append, "|\n");
     } else if ( myhtml_node_next(node) ) {
@@ -229,11 +229,15 @@ char *mdpanda_to_markdown(HtmlObject object)
 		char *text = (char*) myhtml_node_text(cellChild, NULL);
 		if (text) {
 		  if (current_table.colCount < colIndex+1) {
-		    int *newColSizes = malloc(sizeof(int) * colIndex+1);
+		    int *newColSizes = malloc(sizeof(int) * (colIndex+1));
+		    for (int i = 0; i < colIndex+1; i++) // Zero-out values
+		      newColSizes[i] = 0;
 		    for (int i = 0; i < current_table.colCount; i++) {
 		      newColSizes[i] = current_table.colSizes[i];
 		    }
-		    free(current_table.colSizes);
+		    if (current_table.created) {
+		      free(current_table.colSizes);
+		    }
 		    current_table.colSizes = newColSizes;
 		    current_table.colCount = colIndex + 1;
 		  }
@@ -312,17 +316,17 @@ HtmlObject load_html_from_string(char *string)
 
   myhtml_tree_node_t *body = myhtml_tree_get_node_body(tree);
 
-  HtmlObject obj;
-  obj.myhtml_instance = myhtml;
-  obj.tree = tree;
-  obj.body = body;
-
+  
+  HtmlObject obj = {myhtml, tree, body};
   return obj;
 }
 
 HtmlObject load_html_from_file(char *filename)
 {
-  return load_html_from_string( file_to_string(filename) );
+  char *textOfFile = file_to_string(filename);
+  HtmlObject obj = load_html_from_string( textOfFile );
+  free(textOfFile);
+  return obj;
 }
 
 void destroy_html_object(HtmlObject object)
