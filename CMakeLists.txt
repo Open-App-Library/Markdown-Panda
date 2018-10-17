@@ -9,3 +9,6 @@ add_executable(mdpanda src/main.c src/markdownpanda.c)
 
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libmyhtml_static.a)
 target_link_libraries (mdpanda ${CMAKE_THREAD_LIBS_INIT})
+
+ADD_LIBRARY( MarkdownPanda STATIC
+             src/markdownpanda.c )
