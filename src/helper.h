@@ -7,7 +7,7 @@
 #include <ctype.h>
 #include "markdownpanda.h"
 
-typedef enum { False, True } boolean;
+typedef enum { False = 0, True = 1 } boolean;
 
 /* static void removeWhitespace(char* source) */
 /* { */
@@ -47,8 +47,8 @@ static char *trimWhitespace(char *str)
 static boolean string_equals(const char *s1, const char *s2)
 {
   if ( strcmp(s1, s2) == 0)
-    return true;
-  return false;
+    return True;
+  return False;
 }
 
 static char* string_append(const char *s1, const char *s2)

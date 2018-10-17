@@ -3,7 +3,7 @@
 #include "markdownpanda.h"
 #include <time.h>
 
-boolean showParseTime = false;
+boolean showParseTime = False;
 
 int main(int argc, char **argv)
 {
@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     exit( EXIT_FAILURE );
   } else if (argc > 2) {
     if (strcmp(argv[2], "-t") == 0)
-      showParseTime = true;
+      showParseTime = True;
   }
   
   clock_t begin = clock(); // Get start time

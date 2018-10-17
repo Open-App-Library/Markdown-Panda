@@ -5,13 +5,9 @@
 extern "C" {
 #endif
 
-#ifdef _WIN32
-    #define MyCORE_FMT_Z "%Iu"
-#else
-    #define MyCORE_FMT_Z "%zu"
-#endif
-  
-#include <myhtml/api.h>
+typedef struct myhtml myhtml_t;
+typedef struct myhtml_tree myhtml_tree_t;
+typedef struct myhtml_tree_node myhtml_tree_node_t;
 
   typedef struct {
     myhtml_t *myhtml_instance;
@@ -29,13 +25,20 @@ extern "C" {
     int count;
   } HtmlAttributes;
 
-#include <myhtml/api.h>
-
-  char *mdpanda_to_markdown(HtmlObject object);
-
+  // First you need an HTMLObject.
+  // Either load one from a string..or load one from a file.
   HtmlObject load_html_from_string(char *string);
   HtmlObject load_html_from_file(char *filename);
 
+  // With your HtmlObject,
+  // you can now convert it to markdown like so.
+  char *mdpanda_to_markdown(HtmlObject object);
+
+  // After you're all done, destroy your HtmlObject
+  // to free the memory.
+  // NOTE: HtmlObject is a struct. The struct itself
+  // does not actually get freed. However, it has
+  // members that are freed.
   void destroy_html_object(HtmlObject object);
   
 #ifdef __cplusplus

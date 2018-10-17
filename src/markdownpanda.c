@@ -1,6 +1,13 @@
+#include <myhtml/api.h>
 #include "markdownpanda.h"
 #include "helper.h"
 #include "htmlutils.h"
+
+#ifdef _WIN32
+    #define MyCORE_FMT_Z "%Iu"
+#else
+    #define MyCORE_FMT_Z "%zu"
+#endif
 
 int     list_nesting       = 0;
 boolean should_add_newline_to_child_list;
