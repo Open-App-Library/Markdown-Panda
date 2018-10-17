@@ -29,6 +29,7 @@ To compile any of these examples, please follow the [How to compile your program
 int main()
 {
   HtmlObject obj = load_html_from_string("<h1>Test</h1>");
+  // HtmlObject obj = load_html_from_file("myfile.html");
   char *md = mdpanda_to_markdown(obj);
   printf("%s", md);
   destroy_html_object(obj);
