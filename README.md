@@ -38,7 +38,39 @@ int main()
 
 ### C++
 
+```c++
+#include <iostream>
+#include <markdownpanda/cpp.hpp>
+
+int main()
+{
+    MarkdownPanda panda;
+    panda.loadHtmlFile("index.html");
+    // panda.loadHtmlString("<p>You could also use a QString like this</p>");
+    std::string markdown = panda.markdown();
+
+    std::cout << markdown.toStdString();
+}
+
+```
+
 ### C++ / Qt5
+
+```c++
+#include <iostream>
+#include <markdownpanda/qt.hpp>
+
+int main()
+{
+    MarkdownPandaQt panda;
+    panda.loadHtmlFile(":/index.html"); // Loading resource file or regular file
+    // panda.loadHtmlString("<p>You could also use a QString like this</p>");
+    QString markdown = panda.markdown();
+
+    std::cout << markdown.toStdString();
+}
+
+```
 
 ## Manual Installation (Linux / Mac OS X)
 
