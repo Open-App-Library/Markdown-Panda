@@ -17,7 +17,7 @@ install(TARGETS mdpanda markdownpanda_static
         RUNTIME DESTINATION bin
         ARCHIVE DESTINATION lib)
 
-install(FILES src/markdownpanda.h DESTINATION include)
+install(FILES src/markdownpanda.h DESTINATION include/markdownpanda)
       
 install(FILES lib/libmyhtml_static.a DESTINATION lib)
 
