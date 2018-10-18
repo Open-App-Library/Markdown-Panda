@@ -67,7 +67,7 @@ int main()
     // panda.loadHtmlString("<p>You could also use a QString like this</p>");
     QString markdown = panda.markdown();
 
-    std::cout << markdown.toStdString();
+    std::cout << markdown;
 }
 
 ```
