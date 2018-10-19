@@ -1,4 +1,4 @@
-MarkdownPanda: WORK IN PROGRESS
+MarkdownPanda
 -------------------------------
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
@@ -18,6 +18,9 @@ MarkdownPanda: WORK IN PROGRESS
 
 <!-- markdown-toc end -->
 
+## State of MarkdownPanda
+
+Everything is functional. I must implement unit testing to ensure accurate and consistant bi-directional markdown/html conversion.
 
 ## Usage
 
