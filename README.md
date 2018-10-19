@@ -95,16 +95,32 @@ Installing is pretty simple if you've got a little bit of experience with C/C++ 
 
 ### Installing dependencies
 
-In the following commands, you will clone the MarkdownPanda reposotory, change directory into it, pull down the MyHTML submodule (a dependency), compile MyHTML, and install it to the project root.
+You will need the following C libraries:
+
+- [myhtml](https://github.com/lexborisov/myhtml)
+- [hoedown](https://github.com/hoedown/hoedown) (Only needed if you need Markdown->HTML conversion)
+
+If you don't want to install these on your own, you could install them locally in the following way.
+
+In the following commands, you will clone the MarkdownPanda repository, change directory into it, pull down the MyHTML submodule (a dependency), compile MyHTML, and install it to the project root.
 
 1. `git clone https://gitlab.com/Open-App-Library/markdownpanda.git`
 2. `cd markdownpanda`
 3. `git submodule update --init`
-4. `cd external-libraries/myhtml`
-5. `make`
-6. `make install prefix="../.."`
 
-### Compiling the library
+#### MyHTML
+
+1. `cd external-libraries/myhtml`
+2. `make`
+3. `make install PREFIX="../.."`
+
+#### Hoedown
+
+1. `cd external-libraries/hoedown`
+2. `make`
+3. `make install PREFIX="../.."`
+
+#### MarkdownPanda
 
 With the following commands you will compile the project to a folder named "cmake" and then install the files into a folder named "dist".
 
@@ -112,13 +128,12 @@ With the following commands you will compile the project to a folder named "cmak
 - `cmake -DCMAKE_INSTALL_PREFIX=../dist ..`
 - `make install`
 
-
 ## How to compile your program
 
 On Linux, you can compile with GCC.
 
 ```bash
-gcc your-file.c -I /path-to/markdownpanda/dist/include/ -L /path-to/markdownpanda/dist/lib/ -l markdownpanda_static -l myhtml_static -pthread
+gcc your-file.c -I /path-to/markdownpanda/dist/include/ -L /path-to/markdownpanda/dist/lib/ -lmarkdownpanda_static -lmyhtml_static -lhoedown -pthread
 ```
 
 Note that you are specifying the path where the markdownpanda header files are, where the static libraries are, what static libraries to use, and you are finally specifying that you would like to use pthread.
@@ -137,7 +152,12 @@ find_package (Threads)
 
 add_executable(myapp src/main.c)
 
-target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/markdownpanda_static.a)
-target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/myhtml_static.a)
+target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libmarkdownpanda_static.a)
+target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libmyhtml_static.a)
+target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libhoedown.a)
 target_link_libraries (mdpanda ${CMAKE_THREAD_LIBS_INIT})
 ```
+
+## Compile Without Markdown->HTML support
+
+Pass `EXCLUDE_MD2HTML=yes` to cmake. Ex. `cmake .. -DEXCLUDE_MD2HTML=yes`
