@@ -1,16 +1,23 @@
 MarkdownPanda: WORK IN PROGRESS
 -------------------------------
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
 - [Usage](#usage)
-  - [C](#c)
-  - [C++](#c)
-  - [C++ / Qt5](#c--qt5)
-- [Manual Installation (Linux / Mac OS X)](#manual-installation-linux-mac-os-x)
-  - [Installing dependencies](#installing-dependencies)
-  - [Compiling the library](#compiling-the-library)
-- [How to compile your program](#how-to-compile-your-program)
+    - [C](#c)
+    - [C++](#c)
+    - [C++ / Qt5](#c--qt5)
+    - [Manual Installation (Linux / Mac OS X)](#manual-installation-linux-mac-os-x)
+        - [Installing dependencies](#installing-dependencies)
+            - [MyHTML](#myhtml)
+            - [Hoedown](#hoedown)
+            - [MarkdownPanda](#markdownpanda)
+    - [How to compile your program](#how-to-compile-your-program)
+    - [Compile Without Markdown->HTML support](#compile-without-markdown-html-support)
+
+<!-- markdown-toc end -->
+
 
 ## Usage
 
