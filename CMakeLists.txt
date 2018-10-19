@@ -18,6 +18,7 @@ else()
 endif()
 
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libmyhtml_static.a)
+target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libhoedown.a)
 target_link_libraries (mdpanda ${CMAKE_THREAD_LIBS_INIT})
 
 install(TARGETS mdpanda markdownpanda_static
@@ -28,4 +29,5 @@ install(FILES src/markdownpanda.h DESTINATION include/markdownpanda)
 install(FILES src/cpp.hpp DESTINATION include/markdownpanda)      
 install(FILES src/qt.hpp DESTINATION include/markdownpanda)      
 install(FILES lib/libmyhtml_static.a DESTINATION lib)
+install(FILES lib/libhoedown.a DESTINATION lib)
 

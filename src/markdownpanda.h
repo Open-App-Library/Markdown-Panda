@@ -8,7 +8,8 @@ extern "C" {
 #define TYPE_HTML 1
 #define TYPE_MARKDOWN 2
 
-#define HTML_FILE_NOT_FOUND_MESSAGE "<h1>ERROR: HTML File not found</h1>"
+#define HTML_FILE_NOT_FOUND_MESSAGE "<h1>ERROR: HTML file not found</h1>"
+#define MARKDOWN_FILE_NOT_FOUND_MESSAGE "# ERROR: Markdown file not found"
 
 typedef struct myhtml myhtml_t;
 typedef struct myhtml_tree myhtml_tree_t;
@@ -34,10 +35,12 @@ typedef struct myhtml_tree_node myhtml_tree_node_t;
   // Either load one from a string..or load one from a file.
   HtmlObject load_html_from_string(char *string);
   HtmlObject load_html_from_file(char *filename);
+  char *load_markdown_from_file(char *filename);
 
   // With your HtmlObject,
   // you can now convert it to markdown like so.
   char *mdpanda_to_markdown(HtmlObject object);
+  char *mdpanda_to_html(char *markdown_string);
 
   // After you're all done, destroy your HtmlObject
   // to free the memory.

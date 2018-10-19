@@ -22,7 +22,8 @@ public:
 private:
   std::string m_html_string;
   std::string m_markdown_string;
-  bool toMarkdown(HtmlObject obj); // Parses m_html_string into m_markdown_string
+  bool toMarkdown(HtmlObject obj);    // Parses m_html_string into m_markdown_string
+  bool toHtml(char *markdown_string); // Parses m_markdown_string into m_html_string
 };
 
 MarkdownPanda::MarkdownPanda() {}
@@ -53,8 +54,10 @@ bool MarkdownPanda::loadHtmlString(std::string html_string)
 
 bool MarkdownPanda::loadMarkdownString(std::string markdown_string)
 {
-  std::cout << "loadMarkdownString function not yet implemented" << std::endl;
-  return false;
+  char *markdown_cstring = strdup( markdown_string.c_str() );
+  bool result = toHtml( markdown_cstring );
+  delete markdown_cstring;
+  return result;
 }
 
 bool MarkdownPanda::loadHtmlFile(std::string filename)
@@ -69,8 +72,11 @@ bool MarkdownPanda::loadHtmlFile(std::string filename)
 
 bool MarkdownPanda::loadMarkdownFile(std::string filename)
 {
-  std::cout << "loadMarkdownFile function not yet implemented" << std::endl;
-  return false;
+  char *filename_cstring = strdup( filename.c_str() );
+  char *markdown_text = load_markdown_from_file(filename_cstring);
+  bool result = toHtml( markdown_text );
+  delete filename_cstring;
+  return result;
 }
 
 bool MarkdownPanda::toMarkdown(HtmlObject obj)
@@ -79,6 +85,15 @@ bool MarkdownPanda::toMarkdown(HtmlObject obj)
 
   if ( m_markdown_string == HTML_FILE_NOT_FOUND_MESSAGE )
     return false;
+  return true;  
+}
+
+bool MarkdownPanda::toHtml(char *markdown_string)
+{
+  m_html_string = mdpanda_to_html( markdown_string );
+
+  // TODO: Implement failure message
+  
   return true;  
 }
 

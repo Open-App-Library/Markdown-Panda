@@ -13,12 +13,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 SOURCES += \
         main.cpp
 
-HEADERS += $$PWD/../../dist/include/markdownpanda/qt.hpp
+HEADERS += \
+        $$PWD/../../dist/include/markdownpanda/qt.hpp \
+        $$PWD/../../dist/include/markdownpanda/cpp.hpp
 
 INCLUDEPATH += $$PWD/../../dist/include
 
 # Add MarkdownPanda and MyHTML
-LIBS += -L $$PWD/../../dist/lib -lmarkdownpanda_static -lmyhtml_static
+LIBS += -L $$PWD/../../dist/lib -lmarkdownpanda_static -lmyhtml_static -lhoedown
 
 # Add PThread Support
 QMAKE_CXXFLAGS += -std=c++0x -pthread

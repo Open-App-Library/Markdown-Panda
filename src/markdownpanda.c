@@ -340,6 +340,14 @@ HtmlObject load_html_from_file(char *filename)
   return obj;
 }
 
+char *load_markdown_from_file(char *filename)
+{
+  char *textOfFile = file_to_string(filename);
+  if (textOfFile)
+    return textOfFile;
+  return MARKDOWN_FILE_NOT_FOUND_MESSAGE;
+}
+
 void destroy_html_object(HtmlObject object)
 {
   myhtml_tree_destroy(object.tree);

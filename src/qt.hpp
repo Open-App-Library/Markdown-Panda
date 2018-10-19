@@ -49,9 +49,9 @@ bool MarkdownPandaQt::loadHtmlFile(QString filename)
 }
 bool MarkdownPandaQt::loadMarkdownFile(QString filename)
 {
-  (void)filename;
-  qDebug("'loadMarkdownFile' not implemented yet.");
-  return false;
+  QString markdown = this->file2QString(filename);
+  MarkdownPanda *p = this;
+  return p->loadMarkdownString( markdown.toStdString() );
 }
 
 QString MarkdownPandaQt::markdown()
