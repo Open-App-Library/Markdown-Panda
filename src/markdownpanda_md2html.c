@@ -1,6 +1,7 @@
 #include "markdownpanda.h"
 #include <hoedown/html.h>
 #include <string.h>
+#include "unescape.h"
 
 #define MARKDOWNPANDA_MARKDOWN_BUFFER_UNIT 1024
 #define MARKDOWNPANDA_HTML_BUFFER_UNIT 64
@@ -29,5 +30,9 @@ char *mdpanda_to_html(char *markdown_string)
   hoedown_document_free(d);
   hoedown_html_renderer_free(r);
 
-  return your_html;
+  char *your_html_unescaped = malloc( strlen(your_html) + 1);
+  decode_html_entities_utf8(your_html_unescaped, your_html);
+  free(your_html);
+
+  return your_html_unescaped;
 }

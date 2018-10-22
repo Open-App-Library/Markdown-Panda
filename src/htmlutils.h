@@ -51,7 +51,7 @@ int get_tag_id(char *tag)
     return TAG_LINK;
   else if ( string_equals(tag, "strong") || string_equals(tag, "b"))
     return TAG_BOLD;
-  else if ( string_equals(tag, "i") )
+  else if ( string_equals(tag, "i") || string_equals(tag, "em") )
     return TAG_ITALIC;
   else if ( string_equals(tag, "img") )
     return TAG_IMG;
@@ -75,7 +75,7 @@ int get_tag_id(char *tag)
     return TAG_UL;
   else if ( string_equals(tag, "code") )
     return TAG_CODE;
-  else if ( string_equals(tag, "strike") )
+  else if ( string_equals(tag, "strike") || string_equals(tag, "del") )
     return TAG_STRIKE;
   else if ( string_equals(tag, "tr") )
     return TAG_TR;
