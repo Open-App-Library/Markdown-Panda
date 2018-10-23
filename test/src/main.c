@@ -8,6 +8,7 @@
 #include <string.h>
 #include <helper.h>
 #include "test-helpers.h"
+#include "printdiff.h"
 
 char *format_types[] = {"basic-formatting",
 			"code",

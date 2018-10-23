@@ -54,11 +54,18 @@ static char *string_append(const char *s1, const char *s2)
 
 static char *string_append_safe(char *s1, char *s2)
 {
-  char *appendedString = string_append(s1, s2);
-  free(s1);
-  free(s2);
-  s1 = appendedString;
-  return s1;
+  char *new_str ;
+  if((new_str = malloc(strlen(s1)+strlen(s2)+1)) != NULL){
+    new_str[0] = '\0';   // ensures the memory is an empty string
+    strcat(new_str,s1);
+    strcat(new_str,s2);
+    free(s1);
+    free(s2);
+  } else {
+    fprintf(stderr,"malloc failed!\n");
+    exit( EXIT_FAILURE );
+  }
+  return new_str;
 }
 
 static char* string_prepend(const char *s1, const char *s2)
