@@ -5,8 +5,6 @@
 #include <criterion/criterion.h>
 #include <stdio.h>
 #include <markdownpanda.h>
-#include <string.h>
-#include <helper.h>
 #include "test-helpers.h"
 #include "printdiff.h"
 
@@ -49,6 +47,7 @@ int format_count = 8;
  * Markdown->HTML conversion string matches the
  * corresponding HTML file.
  */
+
 Test(formatting, markdown_to_html) {
   for (int i = 0; i < format_count; i++) {
     char *type = format_types[i];
