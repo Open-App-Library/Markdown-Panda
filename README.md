@@ -122,13 +122,13 @@ In the following commands, you will clone the MarkdownPanda repository, change d
 
 1. `cd external-libraries/myhtml`
 2. `make`
-3. `make install PREFIX="../.."`
+3. `make install prefix=../..`
 
 #### Hoedown
 
 1. `cd external-libraries/hoedown`
 2. `make`
-3. `make install PREFIX="../.."`
+3. `make install PREFIX=../..`
 
 #### MarkdownPanda
 

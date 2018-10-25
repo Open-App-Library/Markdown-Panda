@@ -49,16 +49,40 @@ int format_count = 8;
  */
 
 Test(formatting, markdown_to_html) {
+  mdpanda_init_hoedown();
   for (int i = 0; i < format_count; i++) {
     char *type = format_types[i];
     text_t t = load(type);
     char *html = mdpanda_to_html( t.md );
+    boolean isSuccess = true;
 
-    if ( ! string_equals( t.html, html ) ) {
+    if ( !string_equals(t.html, html) ) {
       printf("\n markdown_to_html '%s' FAILED \n\n", type);
       printdiff("Expected HTML", "Hoedown HTML ", t.html, html);
-      cr_assert(0, "Formatting test failed.");
+      isSuccess = false;
     }
-    cr_assert(1);
+
+    free(t.html);
+    free(t.md);
+    free(html);
+
+    cr_assert(isSuccess);
   }
+  mdpanda_destroy_hoedown();
 }
+
+/* Test(formatting, markdown_to_html) { */
+/*   mdpanda_init_hoedown(); */
+
+/*   char *h1 = mdpanda_to_html( "hello world\n\nthis is a love" ); */
+/*   char *h2 = mdpanda_to_html( "I like stuff" ); */
+/*   char *h3 = mdpanda_to_html( "apple\n\ntetsdfsdfsdfdsfd\n\ntestse" ); */
+
+/*   char *format = "\n<html>\n%s\n</html>\n\n"; */
+/*   printf(format, h1); */
+/*   printf(format, h2); */
+/*   printf(format, h3); */
+
+/*   mdpanda_destroy_hoedown(); */
+/*   cr_assert(1); */
+/* } */

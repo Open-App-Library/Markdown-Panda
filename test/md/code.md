@@ -6,4 +6,3 @@ To print a message to your Javascript console, use `console.log("Insert your mes
 ;;; Run the func:
 (myfunc)
 ```
-

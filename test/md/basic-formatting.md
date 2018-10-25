@@ -6,5 +6,4 @@ Welcome to my **awesome website** that is 100% **cool**
 
 ---
 
-Above is an hr tag
-
+Above is an hr tag dude!
