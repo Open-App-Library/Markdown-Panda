@@ -49,7 +49,7 @@ int format_count = 8;
  */
 
 Test(formatting, markdown_to_html) {
-  mdpanda_init_hoedown();
+  //  mdpanda_init_hoedown();
   for (int i = 0; i < format_count; i++) {
     char *type = format_types[i];
     text_t t = load(type);
@@ -68,7 +68,7 @@ Test(formatting, markdown_to_html) {
 
     cr_assert(isSuccess);
   }
-  mdpanda_destroy_hoedown();
+  //  mdpanda_destroy_hoedown();
 }
 
 /* Test(formatting, markdown_to_html) { */
