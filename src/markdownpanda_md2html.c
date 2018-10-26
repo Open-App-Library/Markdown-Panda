@@ -1,12 +1,43 @@
 #include "markdownpanda.h"
 #include <string.h>
 #include "unescape.h"
-#include <cmark.h>
+#include <cmark-gfm.h>
+#include <cmark-gfm-core-extensions.h>
+
+int addMarkdownExtension(cmark_parser *parser, char *extName) {
+  cmark_syntax_extension *ext = cmark_find_syntax_extension(extName);
+  if ( ext ) {
+    cmark_parser_attach_syntax_extension(parser, ext);
+    return 1;
+  }
+  return 0;
+}
 
 char *mdpanda_to_html(char *markdown_string)
 {
-  return cmark_markdown_to_html(markdown_string, strlen(markdown_string),
-				CMARK_OPT_SAFE | );
+  int options = CMARK_OPT_VALIDATE_UTF8 | CMARK_OPT_LIBERAL_HTML_TAG | CMARK_OPT_STRIKETHROUGH_DOUBLE_TILDE | CMARK_OPT_FOOTNOTES;
+
+  cmark_gfm_core_extensions_ensure_registered();
+
+  // Modified version of cmark_parse_document in blocks.c
+  cmark_parser *parser = cmark_parser_new(options);
+
+  ///////////////////////
+  /// Add extensions here
+  ///////////////////////
+  addMarkdownExtension(parser, "strikethrough");
+  addMarkdownExtension(parser, "table");
+
+  cmark_node *doc;
+  cmark_parser_feed(parser, markdown_string, strlen(markdown_string));
+  doc = cmark_parser_finish(parser);
+  cmark_parser_free(parser);
+
+  // Render
+  char *html = cmark_render_html(doc, options, NULL);
+  cmark_node_free(doc);
+
+  return html;
 }
 
 /* #define MARKDOWNPANDA_HTML_BUFFER_UNIT 64 */
