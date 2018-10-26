@@ -1,9 +1,3 @@
 [submodule "external-libraries/myhtml"]
 	path = external-libraries/myhtml
 	url = https://github.com/lexborisov/myhtml.git
-[submodule "external-libraries/hoedown"]
-	path = external-libraries/hoedown
-	url = https://github.com/hoedown/hoedown.git
-[submodule "external-libraries/md4c"]
-	path = external-libraries/md4c
-	url = https://github.com/mity/md4c.git

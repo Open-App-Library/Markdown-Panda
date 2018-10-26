@@ -49,7 +49,6 @@ int format_count = 8;
  */
 
 Test(formatting, markdown_to_html) {
-  //  mdpanda_init_hoedown();
   for (int i = 0; i < format_count; i++) {
     char *type = format_types[i];
     text_t t = load(type);
@@ -58,7 +57,7 @@ Test(formatting, markdown_to_html) {
 
     if ( !string_equals(t.html, html) ) {
       printf("\n markdown_to_html '%s' FAILED \n\n", type);
-      printdiff("Expected HTML", "Hoedown HTML ", t.html, html);
+      printdiff("Expected", "CMark   ", t.html, html);
       isSuccess = false;
     }
 
@@ -68,7 +67,6 @@ Test(formatting, markdown_to_html) {
 
     cr_assert(isSuccess);
   }
-  //  mdpanda_destroy_hoedown();
 }
 
 /* Test(formatting, markdown_to_html) { */

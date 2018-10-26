@@ -43,9 +43,7 @@ typedef struct myhtml_tree_node myhtml_tree_node_t;
   char *mdpanda_to_markdown(HtmlObject object);
 
   // Markdown -> HTML
-  void mdpanda_init_hoedown(); // Do this first
   char *mdpanda_to_html(char *markdown_string); // Then you can convert
-  void mdpanda_destroy_hoedown(); // Remember to call this when you are done
 
   // After you're all done, destroy your HtmlObject
   // to free the memory.

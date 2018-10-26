@@ -1,14 +1,12 @@
 #include "markdownpanda.h"
-//#include <hoedown/html.h>
 #include <string.h>
-#include <md4c.h>
 #include "unescape.h"
+#include <cmark.h>
 
 char *mdpanda_to_html(char *markdown_string)
 {
-  //  md_parse(markdown_string, strlen(markdown_string), const MD_RENDERER *renderer, void *userdata)
-  MD_RENDERER renderer;
-  return "";
+  return cmark_markdown_to_html(markdown_string, strlen(markdown_string),
+				CMARK_OPT_SAFE | );
 }
 
 /* #define MARKDOWNPANDA_HTML_BUFFER_UNIT 64 */

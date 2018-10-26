@@ -24,5 +24,33 @@ text_t load(char *type)
   return t;
 }
 
+char *strip_ignored_chars (char *str, char *ignored_chars)
+{
+  int len = strlen(str) + 1;
+  char *new = malloc( len );
+  int counter = 0;
+  for (int i=0; i < len; i++) {
+    boolean can_add = True;
+    for (int rule = 0; rule < strlen(ignored_chars)+1; rule++) {
+      if ( str[i] == ignored_chars[rule] ) {
+	can_add = False;
+      }
+    }
+    if ( can_add ) {
+      new[counter] = str[i];
+      counter++;
+    }
+  }
+  if ( counter+1 < len ) { // If string is less than needed. Reallocate to smaller.
+    char *new_new = malloc(counter+1);
+    for (int i=0; i < counter; i++)
+      new_new[i] = new[i];
+    free(new);
+    new = new_new;
+  }
+  new[counter] = '\0';
+  return new;
+}
+
 #endif
 
