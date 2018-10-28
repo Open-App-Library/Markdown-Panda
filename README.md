@@ -11,7 +11,7 @@ MarkdownPanda
     - [Manual Installation (Linux / Mac OS X)](#manual-installation-linux-mac-os-x)
         - [Installing dependencies](#installing-dependencies)
             - [MyHTML](#myhtml)
-            - [Hoedown](#hoedown)
+            - [CMark-GFM](#cmark-gfm)
             - [MarkdownPanda](#markdownpanda)
     - [How to compile your program](#how-to-compile-your-program)
     - [Compile Without Markdown->HTML support](#compile-without-markdown-html-support)
@@ -60,7 +60,7 @@ int main()
 
 int main()
 {
-  // HTML to Markdown 
+  // HTML to Markdown
   MarkdownPanda panda;
   panda.loadHtmlFile("index.html");
   // panda.loadHtmlString("<p>You could also use an std::string like this</p>");
@@ -108,7 +108,7 @@ Installing is pretty simple if you've got a little bit of experience with C/C++ 
 You will need the following C libraries:
 
 - [myhtml](https://github.com/lexborisov/myhtml)
-- [hoedown](https://github.com/hoedown/hoedown) (Only needed if you need Markdown->HTML conversion)
+- [CMark GFM](https://github.com/github/cmark-gfm) (Only needed if you need Markdown->HTML conversion)
 
 If you don't want to install these on your own, you could install them locally in the following way.
 
@@ -124,11 +124,13 @@ In the following commands, you will clone the MarkdownPanda repository, change d
 2. `make`
 3. `make install prefix=../..`
 
-#### Hoedown
+#### CMark-GFM
 
-1. `cd external-libraries/hoedown`
-2. `make`
-3. `make install PREFIX=../..`
+1. `cd external-libraries/cmark-gfm`
+2. `mkdir build && cd build`
+3. `cmake .. -DCMAKE_INSTALL_PREFIX=../../..`
+4. `make`
+5. `make install`
 
 #### MarkdownPanda
 
@@ -143,7 +145,7 @@ With the following commands you will compile the project to a folder named "cmak
 On Linux, you can compile with GCC.
 
 ```bash
-gcc your-file.c -I /path-to/markdownpanda/dist/include/ -L /path-to/markdownpanda/dist/lib/ -lmarkdownpanda_static -lmyhtml_static -lhoedown -pthread
+gcc your-file.c -I /path-to/markdownpanda/dist/include/ -L /path-to/markdownpanda/dist/lib/ -lmarkdownpanda_static -lmyhtml_static -lcmark-gfm-extensions -lcmark-gfm -pthread
 ```
 
 Note that you are specifying the path where the markdownpanda header files are, where the static libraries are, what static libraries to use, and you are finally specifying that you would like to use pthread.
@@ -164,7 +166,8 @@ add_executable(myapp src/main.c)
 
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libmarkdownpanda_static.a)
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libmyhtml_static.a)
-target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libhoedown.a)
+target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libcmark-gfm-extensions.a)
+target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/path-to/markdownpanda/dist/lib/libcmark-gfm.a)
 target_link_libraries (mdpanda ${CMAKE_THREAD_LIBS_INIT})
 ```
 
