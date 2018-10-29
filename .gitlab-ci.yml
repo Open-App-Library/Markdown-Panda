@@ -19,7 +19,7 @@ build:
     - echo Installing MarkdownPanda
     - cd ../../..
     - mkdir cmake && cd cmake
-    - cmake -DCMAKE_INSTALL_PREFIX=../build
+    - cmake -DCMAKE_INSTALL_PREFIX=../build ..
     - make
     - make install
 
