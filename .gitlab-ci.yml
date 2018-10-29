@@ -5,11 +5,15 @@ stages:
   - test
 
 before_script:
- - apt-get update
- - apt-get install --yes cmake
- - add-apt-repository ppa:snaipewastaken/ppa --yes
- - apt-get update
- - apt-get install --yes criterion-dev
+  - apt-get update
+  - apt-get install --yes cmake
+  - # Install Criterion
+  - git clone https://github.com/Snaipe/Criterion.git
+  - cd Criterion
+  - mkdir cmake && cd cmake
+  - cmake ..
+  - make
+  - make install
 
 build:
   stage: build
