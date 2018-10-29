@@ -68,7 +68,7 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if ( alt_attr ) {
       const char *alt_char = myhtml_attribute_value(alt_attr, NULL);
       if (alt_char)
-	data.prepend = string_append(data.prepend, alt_char);      
+	data.prepend = string_append(data.prepend, alt_char);
     }
     data.append = string_append(data.append, ")");
     break;
@@ -181,7 +181,7 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     }
     data.prepend = "";
     data.prepend = string_append(data.prepend, text);
-    break;   
+    break;
   }
   default:
     if ( tagID > 0 && tagID <= 6 ) {
@@ -272,7 +272,7 @@ char *mdpanda_to_markdown(HtmlObject object)
 
     // Append the children
     HtmlObject child = { object.myhtml_instance, tree, myhtml_node_child(node) };
-    markdown = string_append(markdown, mdpanda_to_markdown(child)); 
+    markdown = string_append(markdown, mdpanda_to_markdown(child));
 
     // Closing
     markdown = string_append(markdown, appendPrependData.append);
@@ -302,6 +302,21 @@ char *mdpanda_to_markdown(HtmlObject object)
 
     node = myhtml_node_next(node);
   }
+
+  // Ensure one newline at the end
+  // TODO: Test this little function
+  for (int i = strlen(markdown); i > 0; i++) {
+    if ( markdown[i] != '\n' ) {
+      if ( i+2 > strlen(markdown) ) {
+	if ( realloc(markdown, i+2) )
+	  puts("Error running realloc in markdownpanda.c in mdpanda_to_markdown CASE 1");
+	markdown[i+1] = '\n';
+	markdown[i+2] = '\0';
+      }
+      break;
+    }
+  }
+
   return markdown;
 }
 
@@ -323,7 +338,7 @@ HtmlObject load_html_from_string(char *string)
 
   myhtml_tree_node_t *body = myhtml_tree_get_node_body(tree);
 
-  
+
   HtmlObject obj = {myhtml, tree, body};
   return obj;
 }

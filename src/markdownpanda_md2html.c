@@ -34,7 +34,12 @@ char *mdpanda_to_html(char *markdown_string)
   char *html = cmark_render_html(doc, options, NULL);
   cmark_node_free(doc);
 
-  return html;
+  // Unescape encoded HTML characters (ex. &quot; becomes ")
+  char *html_unescaped = malloc( strlen(html) + 1);
+  decode_html_entities_utf8(html_unescaped, html);
+  free(html);
+
+  return html_unescaped;
 }
 
 /* #define MARKDOWNPANDA_HTML_BUFFER_UNIT 64 */
