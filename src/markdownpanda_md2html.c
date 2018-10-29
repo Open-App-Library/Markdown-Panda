@@ -4,13 +4,10 @@
 #include <cmark-gfm.h>
 #include <cmark-gfm-core-extensions.h>
 
-int addMarkdownExtension(cmark_parser *parser, char *extName) {
+void addMarkdownExtension(cmark_parser *parser, char *extName) {
   cmark_syntax_extension *ext = cmark_find_syntax_extension(extName);
-  if ( ext ) {
+  if ( ext )
     cmark_parser_attach_syntax_extension(parser, ext);
-    return 1;
-  }
-  return 0;
 }
 
 char *mdpanda_to_html(char *markdown_string)
