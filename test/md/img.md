@@ -1,4 +1,4 @@
-love![My beach picture](https://duckduckgo.com/beach.jpg)
+![My beach picture](https://duckduckgo.com/beach.jpg)
 
 ![my ghost picture]()
 
