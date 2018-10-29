@@ -14,6 +14,7 @@ build:
       - lib/
       - include/
       - cmake/
+      - cmake/RunUnitTests
   script:
     - git submodule update --init
     - echo Installing MyHTML
@@ -29,9 +30,8 @@ build:
     - echo Installing MarkdownPanda
     - cd ../../..
     - mkdir cmake && cd cmake
-    - cmake -DCMAKE_INSTALL_PREFIX=../build ..
+    - cmake ..
     - make
-    - make install
 
 test:
   stage: test
