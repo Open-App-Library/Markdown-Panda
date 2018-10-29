@@ -1,11 +1,15 @@
 image: gcc
-before_script:
- - apt-get update --yes
- - apt-get install --yes cmake
 
 stages:
   - build
   - test
+
+before_script:
+ - apt-get update
+ - apt-get install --yes cmake
+ - add-apt-repository ppa:snaipewastaken/ppa --yes
+ - apt-get update
+ - apt-get install --yes criterion-dev
 
 build:
   stage: build
@@ -36,7 +40,5 @@ build:
 test:
   stage: test
   script:
-    - echo hello world
     - cd cmake
-    - ls
     - ./RunUnitTests
