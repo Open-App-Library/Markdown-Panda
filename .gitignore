@@ -1,10 +1,11 @@
 # Emacs
 *~
 *#
-
+.#*
 # Folders
 cmake/
 dist/
+build/
 
 # Includes and Libs
 include/
@@ -56,4 +57,3 @@ target_wrapper.*
 
 # QtCreator CMake
 CMakeLists.txt.user*
-

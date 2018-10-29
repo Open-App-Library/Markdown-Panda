@@ -18,6 +18,7 @@ char *format_types[] = {"basic-formatting",
 			"tables"};
 int format_count = 8;
 
+
 /*
  * HTML to Markdown:
  * This test will run through all of the format_types,
@@ -39,6 +40,7 @@ Test(formatting, html_to_markdown) {
     cr_assert(1);
   }
 }
+
 
 /*
  * Markdown to HTML
@@ -67,6 +69,7 @@ Test(formatting, markdown_to_html) {
     cr_assert(isSuccess);
   }
 }
+
 
 /*
  * Testing ensure_newline in helper.h

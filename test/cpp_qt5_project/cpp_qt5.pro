@@ -14,13 +14,13 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
-        $$PWD/../../dist/include/markdownpanda/qt.hpp \
-        $$PWD/../../dist/include/markdownpanda/cpp.hpp
+        $$PWD/../../build/include/markdownpanda/qt.hpp \
+        $$PWD/../../build/include/markdownpanda/cpp.hpp
 
-INCLUDEPATH += $$PWD/../../dist/include
+INCLUDEPATH += $$PWD/../../build/include
 
 # Add MarkdownPanda and MyHTML
-LIBS += -L $$PWD/../../dist/lib -lmarkdownpanda_static -lmyhtml_static -lhoedown
+LIBS += -L $$PWD/../../build/lib -lmarkdownpanda_static -lmyhtml_static -lcmark-gfm-extensions -lcmark-gfm
 
 # Add PThread Support
 QMAKE_CXXFLAGS += -std=c++0x -pthread

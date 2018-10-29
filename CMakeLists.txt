@@ -20,6 +20,7 @@ else()
                src/markdownpanda.c src/markdownpanda_md2html.c)
 endif()
 
+
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libmyhtml_static.a)
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libcmark-gfm-extensions.a)
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libcmark-gfm.a)
