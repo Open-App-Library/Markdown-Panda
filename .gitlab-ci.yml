@@ -8,6 +8,7 @@ stages:
   - test
 
 build:
+  stage: build
   script:
     - git submodule update --init
     - echo Installing MyHTML
@@ -28,8 +29,9 @@ build:
     - make install
 
 test:
- script:
-   - echo $PWD
-   - ls
-   - cd cmake
-   - ./RunUnitTests
+  stage: test
+  script:
+    - echo $PWD
+    - ls
+    - cd cmake
+    - ./RunUnitTests
