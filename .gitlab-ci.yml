@@ -1,4 +1,4 @@
-image: gcc
+image: ubuntu
 
 stages:
   - build
@@ -6,14 +6,10 @@ stages:
 
 before_script:
   - apt-get update
-  - apt-get install --yes cmake
-  - echo Installing Criterion
-  - git clone https://github.com/Snaipe/Criterion.git
-  - cd Criterion
-  - mkdir cmake && cd cmake
-  - cmake ..
-  - make
-  - make install
+  - apt-get install --yes build-essential cmake
+  - add-apt-repository ppa:snaipewastaken/ppa --yes
+  - apt-get update
+  - apt-get install --yes criterion-dev
 
 build:
   stage: build
