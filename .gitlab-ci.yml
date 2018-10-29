@@ -7,7 +7,7 @@ stages:
 before_script:
   - apt-get update
   - apt-get install --yes cmake
-  - # Install Criterion
+  - echo Installing Criterion
   - git clone https://github.com/Snaipe/Criterion.git
   - cd Criterion
   - mkdir cmake && cd cmake
