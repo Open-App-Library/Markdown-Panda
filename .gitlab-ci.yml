@@ -1,4 +1,4 @@
-image: ubuntu
+image: gcc
 
 stages:
   - build
@@ -6,7 +6,7 @@ stages:
 
 before_script:
   - apt-get update
-  - apt-get install --yes build-essential cmake
+  - apt-get install --yes build-essential cmake software-properties-common
   - add-apt-repository ppa:snaipewastaken/ppa --yes
   - apt-get update
   - apt-get install --yes criterion-dev
