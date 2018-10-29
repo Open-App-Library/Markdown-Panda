@@ -3,6 +3,10 @@ before_script:
  - apt-get update --yes
  - apt-get install --yes cmake
 
+stages:
+  - build
+  - test
+
 build:
   script:
     - git submodule update --init
@@ -25,7 +29,5 @@ build:
 
 test:
  script:
-   - echo $PWD
-   - ls
    - cd cmake
    - ./RunUnitTests
