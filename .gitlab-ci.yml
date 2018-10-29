@@ -1,0 +1,29 @@
+image: gcc
+before_script:
+ - apt-get update --yes
+ - apt-get install --yes cmake
+
+build:
+  script:
+    - git submodule update --init
+    - echo Installing MyHTML
+    - cd external-libraries/myhtml
+    - make
+    - make install prefix=../..
+    - echo Installing CMark-GFM
+    - cd ../cmark-gfm
+    - mkdir build && cd build
+    - cmake .. -DCMAKE_INSTALL_PREFIX=../../..
+    - make
+    - make install
+    - echo Installing MarkdownPanda
+    - cd ../../..
+    - mkdir cmake && cd cmake
+    - cmake -DCMAKE_INSTALL_PREFIX=../build
+    - make
+    - make install
+
+test:
+ script:
+   - cd cmake
+   - ./RunUnitTests
