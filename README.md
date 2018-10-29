@@ -136,7 +136,7 @@ In the following commands, you will clone the MarkdownPanda repository, change d
 
 With the following commands you will compile the project to a folder named "cmake" and then install the files into a folder named "dist".
 
-- `mkdir cmake && cd cmake`
+- `mkdir build && cd build`
 - `cmake -DCMAKE_INSTALL_PREFIX=../build`
 - `make install`
 
