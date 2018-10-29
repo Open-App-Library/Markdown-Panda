@@ -9,6 +9,11 @@ stages:
 
 build:
   stage: build
+  artifacts:
+    paths:
+      - lib/
+      - include/
+      - cmake/
   script:
     - git submodule update --init
     - echo Installing MyHTML
