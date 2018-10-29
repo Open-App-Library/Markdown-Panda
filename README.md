@@ -99,6 +99,14 @@ int main()
 
 ```
 
+## Easy Installation (Linux / Mac OS X)
+
+A nice little shell script is available. It will build the dependencies and compile the entire project. MarkdownPanda will be installed to the build/ folder.
+
+To install:
+
+`sh build.sh`
+
 ## Manual Installation (Linux / Mac OS X)
 
 Installing is pretty simple if you've got a little bit of experience with C/C++ libraries.
