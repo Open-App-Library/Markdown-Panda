@@ -4,18 +4,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <criterion/criterion.h>
 #include <helper.h>
 
 ////////////////
 // PUBLIC API //
 ////////////////
 void printdiff(char *s1_label, char *s2_label, char *s1, char *s2);
-  
+
 ////////////////////
 // Implementation //
 ////////////////////
 
-#define DIFF_FILE_PADDING 5 /* Amount of characters to show 
+#define DIFF_FILE_PADDING 5 /* Amount of characters to show
 			     * before and after a printdiff
 			     * output */
 
@@ -95,18 +96,18 @@ void printdiff(char *s1_label, char *s2_label, char *s1, char *s2)
 {
   int s1_len = strlen(s1);
   int s2_len = strlen(s2);
-  /* 
+  /*
    * keep it simple for now and only loop through
    * shortest string.
    */
-  int len = s1_len < s2_len ? s1_len : s2_len; 
+  int len = s1_len < s2_len ? s1_len : s2_len;
 
   boolean inDifferentPart = False;
   char *diffBuffer1 = malloc(1); diffBuffer1[0] = '\0';
   char *diffBuffer2 = malloc(1); diffBuffer2[0] = '\0';
 
-  puts("\tSummary");
-  puts("\t=======");
+  cr_log_info("\tSummary");
+  cr_log_info("\t=======");
 
   for (int i = 0; i < len; i++) {
     if ( s1[i] == s2[i]) {
@@ -118,7 +119,7 @@ void printdiff(char *s1_label, char *s2_label, char *s1, char *s2)
 	diffBuffer1 = string_cat_with_color(COLOR_GREEN, diffBuffer1, charPadding1);
 	diffBuffer2 = string_cat_with_color(COLOR_GREEN, diffBuffer2, charPadding2);
 
-	printf("\t[%s]: %s\n\t[%s]: %s\n\n", s1_label, diffBuffer1, s2_label, diffBuffer2);
+	cr_log_info("\t[%s]: %s\n\t[%s]: %s\n\n", s1_label, diffBuffer1, s2_label, diffBuffer2);
 
 	inDifferentPart = False;
 	free(diffBuffer1); free(diffBuffer2);
@@ -145,11 +146,12 @@ void printdiff(char *s1_label, char *s2_label, char *s1, char *s2)
       inDifferentPart=True;
     }
   }
-  puts("Full Files");
-  puts("==========");
-  printf("%s\n%s", s1_label, s1);
-  printf("\n%s\n%s\n", s2_label, s2);
+  if (criterion_options.logging_threshold != CRITERION_IMPORTANT) {
+    puts("Full Files");
+    puts("==========");
+    printf("%s\n%s", s1_label, s1);
+    printf("\n%s\n%s\n", s2_label, s2);
+  }
 }
 
 #endif
-

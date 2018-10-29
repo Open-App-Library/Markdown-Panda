@@ -40,6 +40,7 @@ static boolean string_equals(const char *s1, const char *s2)
 
 static char *string_append(const char *s1, const char *s2)
 {
+  // puts("WARNING: string_append is deprecated. Please use string_append_safe instead.");
   char * new_str ;
   if((new_str = malloc(strlen(s1)+strlen(s2)+1)) != NULL){
     new_str[0] = '\0';   // ensures the memory is an empty string
@@ -109,6 +110,21 @@ static char *file_to_string(char *filename) {
     return buffer;
   }
   return NULL;
+}
+
+static void ensure_newline(char *str)
+{
+  for (int i = strlen(str)-1; i > 0; i--) {
+    if ( str[i] != '\n' ) {
+      if ( i+3 >= strlen(str)-1 )
+      	if ( !realloc(str, i+3) )
+      	  puts("Error running realloc in markdownpanda.c in mdpanda_to_markdown CASE 1");
+      str[i+1] = '\n';
+      str[i+2] = '\n';
+      str[i+3] = '\0';
+      break;
+    }
+  }
 }
 
 #endif

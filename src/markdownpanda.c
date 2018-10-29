@@ -195,7 +195,7 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
   return data;
 }
 
-char *mdpanda_to_markdown(HtmlObject object)
+char *mdpanda_to_markdown_recursive(HtmlObject object)
 {
   char               *markdown = "";
   myhtml_tree_t      *tree = object.tree;
@@ -272,7 +272,7 @@ char *mdpanda_to_markdown(HtmlObject object)
 
     // Append the children
     HtmlObject child = { object.myhtml_instance, tree, myhtml_node_child(node) };
-    markdown = string_append(markdown, mdpanda_to_markdown(child));
+    markdown = string_append(markdown, mdpanda_to_markdown_recursive(child));
 
     // Closing
     markdown = string_append(markdown, appendPrependData.append);
@@ -304,18 +304,16 @@ char *mdpanda_to_markdown(HtmlObject object)
   }
 
   // Ensure one newline at the end
-  // TODO: Test this little function
-  for (int i = strlen(markdown); i > 0; i++) {
-    if ( markdown[i] != '\n' ) {
-      if ( i+2 > strlen(markdown) ) {
-	if ( realloc(markdown, i+2) )
-	  puts("Error running realloc in markdownpanda.c in mdpanda_to_markdown CASE 1");
-	markdown[i+1] = '\n';
-	markdown[i+2] = '\0';
-      }
-      break;
-    }
-  }
+  ensure_newline(markdown);
+  return markdown;
+}
+
+char *mdpanda_to_markdown(HtmlObject object)
+{
+  char *markdown = mdpanda_to_markdown_recursive(object);
+
+  // Process output
+  ensure_newline(markdown);
 
   return markdown;
 }
