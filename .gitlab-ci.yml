@@ -25,5 +25,7 @@ build:
 
 test:
  script:
+   - echo $PWD
+   - ls
    - cd cmake
    - ./RunUnitTests
