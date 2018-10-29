@@ -31,6 +31,15 @@ static char *trimWhitespace(char *str)
   return str;
 }
 
+static void trimTrailingNewlines(char *str)
+{
+  for (int i = strlen(str)-1; i >= 0; i--) {
+    if ( str[i] == '\n' ){
+      str[i] = '\0';
+    } else break;
+  }
+}
+
 static boolean string_equals(const char *s1, const char *s2)
 {
   if ( strcmp(s1, s2) == 0)
@@ -116,12 +125,11 @@ static void ensure_newline(char *str)
 {
   for (int i = strlen(str)-1; i > 0; i--) {
     if ( str[i] != '\n' ) {
-      if ( i+3 >= strlen(str)-1 )
-      	if ( !realloc(str, i+3) )
+      if ( i+2 >= strlen(str)-1 )
+      	if ( !realloc(str, i+2) )
       	  puts("Error running realloc in markdownpanda.c in mdpanda_to_markdown CASE 1");
       str[i+1] = '\n';
-      str[i+2] = '\n';
-      str[i+3] = '\0';
+      str[i+2] = '\0';
       break;
     }
   }

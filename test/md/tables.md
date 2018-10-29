@@ -8,4 +8,3 @@
 | January  | $100    |
 | February | $80     |
 | Sum      | $180    |
-

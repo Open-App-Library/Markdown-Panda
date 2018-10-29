@@ -149,8 +149,8 @@ void printdiff(char *s1_label, char *s2_label, char *s1, char *s2)
   if (criterion_options.logging_threshold != CRITERION_IMPORTANT) {
     puts("Full Files");
     puts("==========");
-    printf("%s\n%s", s1_label, s1);
-    printf("\n%s\n%s\n", s2_label, s2);
+    printf("\n[START - %s]\n%s[END - %s /]\n\n", s1_label, s1, s1_label);
+    printf("\n[START - %s]\n%s[END - %s /]\n\n", s2_label, s2, s2_label);
   }
 }
 

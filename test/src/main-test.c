@@ -26,19 +26,19 @@ int format_count = 8;
  * HTML->Markdown conversion string matches the
  * corresponding markdown file.
  */
-/* Test(formatting, html_to_markdown) { */
-/*   for (int i = 0; i < format_count; i++) { */
-/*     char *type = format_types[i]; */
-/*     text_t t = load(type); */
-/*     char *md = mdpanda_to_markdown( t.htmlObject ); */
-/*     if ( ! string_equals( t.md, md) ) { */
-/*       cr_log_error("\n html_to_markdown '%s' FAILED \n\n", type); */
-/*       printdiff("Expected", "mdpanda ", t.md, md); */
-/*       cr_assert(0, "Formatting test failed."); */
-/*     } */
-/*     cr_assert(1); */
-/*   } */
-/* } */
+Test(formatting, html_to_markdown) {
+  for (int i = 0; i < format_count; i++) {
+    char *type = format_types[i];
+    text_t t = load(type);
+    char *md = mdpanda_to_markdown( t.htmlObject );
+    if ( ! string_equals( t.md, md) ) {
+      cr_log_error("\n html_to_markdown '%s' FAILED \n\n", type);
+      printdiff("Expected", "mdpanda ", t.md, md);
+      cr_assert(0, "Formatting test failed.");
+    }
+    cr_assert(1);
+  }
+}
 
 /*
  * Markdown to HTML
@@ -48,7 +48,6 @@ int format_count = 8;
  * Markdown->HTML conversion string matches the
  * corresponding HTML file.
  */
-
 Test(formatting, markdown_to_html) {
   for (int i = 0; i < format_count; i++) {
     char *type = format_types[i];
@@ -72,9 +71,8 @@ Test(formatting, markdown_to_html) {
 /*
  * Testing ensure_newline in helper.h
  */
-
 Test(helper_functions, ensure_newlines) {
-  char *expected = "Hello\n\n";
+  char *expected = "Hello\n"; // Expected output after running ensure_newlines on each test string.
 
   size_t tests_length = 4;
   char *tests[ tests_length ];

@@ -155,12 +155,15 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     boolean blockquote_parent = tag_is_parent(TAG_BLOCKQUOTE, tree, node);
     boolean li_parent = tag_is_parent(TAG_LI, tree, node);
     boolean table_parent = tag_is_parent(TAG_TABLE, tree, node);
+    boolean code_parent = tag_is_parent(TAG_CODE, tree, node);
+
     if ( blockquote_parent ) {
       text = trimWhitespace(text);
       text = string_prepend(text, "> ");
     } else if ( li_parent || table_parent) {
       text = trimWhitespace(text);
     }
+
     if ( table_parent ) {
       int curColIndex = 0;
       myhtml_tree_node_t *prevCell = myhtml_node_prev( myhtml_node_parent(node) );
@@ -178,6 +181,10 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
 	puts("ERROR! Counted a table column count greater than exists. Exiting...");
 	exit( EXIT_FAILURE );
       }
+    }
+
+    if ( code_parent ) {
+      trimTrailingNewlines(text);
     }
     data.prepend = "";
     data.prepend = string_append(data.prepend, text);
@@ -208,6 +215,7 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 
     myhtml_tag_id_t pid      = myhtml_node_tag_id(myhtml_node_parent(node));
     char	   *pname    = (char*) myhtml_tag_name_by_id(tree, pid, NULL);
+    int parent_html_tag_id = get_tag_id(pname);
 
     if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
       list_nesting++;
@@ -293,7 +301,7 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 	   !(html_tag_id == TAG_LI && list_nesting > 1))
 	markdown = string_append(markdown, "\n");
     }
-    else if ( is_block_element(html_tag_id) )
+    else if ( is_block_element(html_tag_id) && !is_block_element(parent_html_tag_id) )
       markdown = string_append(markdown, "\n\n");
 
     if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
@@ -303,8 +311,6 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
     node = myhtml_node_next(node);
   }
 
-  // Ensure one newline at the end
-  ensure_newline(markdown);
   return markdown;
 }
 
