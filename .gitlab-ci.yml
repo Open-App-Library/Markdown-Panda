@@ -36,7 +36,7 @@ build:
 test:
   stage: test
   script:
-    - echo $PWD
-    - ls
+    - echo hello world
     - cd cmake
+    - ls
     - ./RunUnitTests
