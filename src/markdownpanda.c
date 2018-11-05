@@ -4,9 +4,9 @@
 #include "htmlutils.h"
 
 #ifdef _WIN32
-    #define MyCORE_FMT_Z "%Iu"
+#define MyCORE_FMT_Z "%Iu"
 #else
-    #define MyCORE_FMT_Z "%zu"
+#define MyCORE_FMT_Z "%zu"
 #endif
 
 int     list_nesting       = 0;
@@ -51,7 +51,7 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if (href_attr) {
       const char *attr_char = myhtml_attribute_value(href_attr, NULL);
       if (attr_char)
-	data.append = string_append(data.append, attr_char);
+				data.append = string_append(data.append, attr_char);
     }
     data.append = string_append(data.append, ")");
     break;
@@ -63,12 +63,12 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if ( src_attr ) {
       const char *src_char = myhtml_attribute_value(src_attr, NULL);
       if (src_char)
-	data.append = string_append(data.append, src_char);
+				data.append = string_append(data.append, src_char);
     }
     if ( alt_attr ) {
       const char *alt_char = myhtml_attribute_value(alt_attr, NULL);
       if (alt_char)
-	data.prepend = string_append(data.prepend, alt_char);
+				data.prepend = string_append(data.prepend, alt_char);
     }
     data.append = string_append(data.append, ")");
     break;
@@ -78,9 +78,9 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     } else {
       data.prepend = "";
       if ( myhtml_node_next(node) ) {
-	data.append = "\n";
+				data.append = "\n";
       } else {
-	data.append = "";
+				data.append = "";
       }
     }
     break;
@@ -91,10 +91,10 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if ( node_is_id(TAG_TH, tree, myhtml_node_child(node) ) ) {
       data.append = "\n";
       for (int i = 0; i < current_table.colCount; i++) {
-    	data.append = string_append(data.append, "|");
-    	for (int s = 0; s < current_table.colSizes[i] + 2; s++) { // +2 for two spaces on both siide of table to give nice space
-    	  data.append = string_append(data.append, "-");
-    	}
+				data.append = string_append(data.append, "|");
+				for (int s = 0; s < current_table.colSizes[i] + 2; s++) { // +2 for two spaces on both siide of table to give nice space
+					data.append = string_append(data.append, "-");
+				}
       }
       data.append = string_append(data.append, "|\n");
     } else if ( myhtml_node_next(node) ) {
@@ -122,40 +122,43 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
       data.prepend = "| ";
     break;
   case TAG_LI:
-      if ( node_parent_is_id(TAG_OL, tree, node) ) {
-      	char numberstr[4];
-	int index = 1;
-	myhtml_tree_node_t *other_list_item = myhtml_node_prev(node);
-	while (other_list_item) {
-	  index++;
-	  other_list_item = myhtml_node_prev( other_list_item );
-	}
-      	sprintf(numberstr, "%i", index);
-      	data.prepend = string_append(numberstr, ". ");
-      	data.append = "";
-      } else {
-      	data.prepend = "- ";
-      	data.append = "";
-      }
-      if ( list_nesting > 1) {
-	int indentation = 2;
-	int curLineIndentation = list_nesting * indentation - 2;
-	char spaces[curLineIndentation+2];
-	spaces[0] = '\n';
-	for (int i = 1; i < curLineIndentation+1; i++) {
-	  spaces[i] = ' ';
-	}
-	spaces[curLineIndentation+1] = '\0';
-	data.prepend = string_prepend(data.prepend, spaces);
-	should_add_newline_to_child_list = false;
-      }
-      break;
+		if ( node_parent_is_id(TAG_OL, tree, node) ) {
+			char numberstr[4];
+			int index = 1;
+			myhtml_tree_node_t *other_list_item = myhtml_node_prev(node);
+			while (other_list_item) {
+				index++;
+				other_list_item = myhtml_node_prev( other_list_item );
+			}
+			sprintf(numberstr, "%i", index);
+			data.prepend = string_append(numberstr, ". ");
+			data.append = "";
+		} else {
+			data.prepend = "- ";
+			data.append = "";
+		}
+		if ( list_nesting > 1) {
+			int indentation = 2;
+			int curLineIndentation = list_nesting * indentation - 2;
+			char spaces[curLineIndentation+2];
+			spaces[0] = '\n';
+			for (int i = 1; i < curLineIndentation+1; i++) {
+				spaces[i] = ' ';
+			}
+			spaces[curLineIndentation+1] = '\0';
+			data.prepend = string_prepend(data.prepend, spaces);
+			should_add_newline_to_child_list = false;
+		}
+		break;
   case TAG_TEXT: {
     char *text = (char*) myhtml_node_text(node, NULL);
     boolean blockquote_parent = tag_is_parent(TAG_BLOCKQUOTE, tree, node);
     boolean li_parent = tag_is_parent(TAG_LI, tree, node);
     boolean table_parent = tag_is_parent(TAG_TABLE, tree, node);
     boolean code_parent = tag_is_parent(TAG_CODE, tree, node);
+    boolean bold_parent = tag_is_parent(TAG_BOLD, tree, node);
+    boolean italic_parent = tag_is_parent(TAG_ITALIC, tree, node);
+		boolean mustFreeText = False;
 
     if ( blockquote_parent ) {
       text = trimWhitespace(text);
@@ -168,33 +171,66 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
       int curColIndex = 0;
       myhtml_tree_node_t *prevCell = myhtml_node_prev( myhtml_node_parent(node) );
       if (curColIndex <= current_table.colCount) {
-	while (prevCell) {
-	  curColIndex++;
-	  prevCell = myhtml_node_prev(prevCell);
-	}
-	int textLen = strlen(text); // 2 for the two spaces added on the side for paddingo
-	int spacesToAdd = current_table.colSizes[curColIndex] - textLen;
-	for (int s = 0; s < spacesToAdd; s++) {
-	  data.append = string_append(data.append, " ");
-	}
+				while (prevCell) {
+					curColIndex++;
+					prevCell = myhtml_node_prev(prevCell);
+				}
+				int textLen = strlen(text); // 2 for the two spaces added on the side for paddingo
+				int spacesToAdd = current_table.colSizes[curColIndex] - textLen;
+				for (int s = 0; s < spacesToAdd; s++) {
+					data.append = string_append(data.append, " ");
+				}
       } else {
-	puts("ERROR! Counted a table column count greater than exists. Exiting...");
-	exit( EXIT_FAILURE );
+				puts("ERROR! Counted a table column count greater than exists. Exiting...");
+				exit( EXIT_FAILURE );
       }
     }
 
     if ( code_parent ) {
       trimTrailingNewlines(text);
     }
+
+		// Make sure no spaces at beginning or end of text
+		// Function ID: REMOVE_TRAILING_FROM_TAGS
+		if ( bold_parent || italic_parent ) {
+			// Check beginning
+			int origStrLen = strlen(text);
+			int start=0, end=origStrLen;
+			int spacesToPrepend=0, spacesToAppend=0;
+			for ( int i = 0; i < origStrLen+1; i++ ) {
+				if (text[i] == ' ') start = i+1;
+				else break;
+			}
+			// Check ending
+			for ( int i = origStrLen-1; i > 0; i-- ) {
+				if (text[i] == ' ') end = i;
+				else break;
+			}
+			// Create new string
+			if ( start > 0 || end < origStrLen ) {
+				char *new = malloc( end-start+2 );
+				for (int i = start; i < end; i++) {
+					if (i-start < 0)
+						puts("[WARNING] markdownpanda.c i-start is less than zero. This should never happen!\n(function ID=REMOVE_TRAILING_FROM_TAGS)");
+					new[i-start] = text[i];
+					mustFreeText = True;
+				}
+				text = new;
+				spacesToPrepend = start;
+				spacesToAppend = origStrLen - end;
+			}
+		}
     data.prepend = "";
     data.prepend = string_append(data.prepend, text);
+		if (mustFreeText)
+			free(text);
     break;
   }
   default:
     if ( tagID > 0 && tagID <= 6 ) {
       char *heading_prefix = "";
       for (int i = 0; i < tagID; i++)
-	heading_prefix = string_append(heading_prefix, "#");
+				heading_prefix = string_append(heading_prefix, "#");
       heading_prefix = string_append(heading_prefix, " ");
       data.prepend = heading_prefix;
     }
@@ -230,46 +266,46 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
     if (html_tag_id == TAG_TABLE && !current_table.created ) {
       myhtml_tree_node_t *thead_or_tbody = myhtml_node_child(node);
       while (thead_or_tbody) {
-	myhtml_tree_node_t *tr = myhtml_node_child(thead_or_tbody);
-	while (tr) {
-	  // Loop through 'th' or 'td's (cells)
-	  myhtml_tree_node_t *cell = myhtml_node_child(tr);
-	  int colIndex = 0;
-	  while (cell) {
-	    myhtml_tree_node_t *cellChild = myhtml_node_child(cell);
-	    while (cellChild) {
-	      myhtml_tag_id_t cellChildID = myhtml_node_tag_id(cellChild);
-	      char *tag = (char*) myhtml_tag_name_by_id(tree, cellChildID, NULL);
-	      if ( string_equals(tag, "-text") ) {
-		char *text = (char*) myhtml_node_text(cellChild, NULL);
-		if (text) {
-		  if (current_table.colCount < colIndex+1) {
-		    int *newColSizes = malloc(sizeof(int) * (colIndex+1));
-		    for (int i = 0; i < colIndex+1; i++) // Zero-out values
-		      newColSizes[i] = 0;
-		    for (int i = 0; i < current_table.colCount; i++) {
-		      newColSizes[i] = current_table.colSizes[i];
-		    }
-		    if (current_table.created) {
-		      free(current_table.colSizes);
-		    }
-		    current_table.colSizes = newColSizes;
-		    current_table.colCount = colIndex + 1;
-		  }
-		  int strLen = strlen(text);
-		  if (strLen > current_table.colSizes[colIndex]) {
-		    current_table.colSizes[colIndex] = strLen;
-		  }
-		}
-	      }
-	      cellChild = myhtml_node_child(cellChild);
-	    }
-	    colIndex++;
-	    cell = myhtml_node_next(cell);
-	  }
-	  tr = myhtml_node_next(tr);
-	}
-	thead_or_tbody = myhtml_node_next(thead_or_tbody);
+				myhtml_tree_node_t *tr = myhtml_node_child(thead_or_tbody);
+				while (tr) {
+					// Loop through 'th' or 'td's (cells)
+					myhtml_tree_node_t *cell = myhtml_node_child(tr);
+					int colIndex = 0;
+					while (cell) {
+						myhtml_tree_node_t *cellChild = myhtml_node_child(cell);
+						while (cellChild) {
+							myhtml_tag_id_t cellChildID = myhtml_node_tag_id(cellChild);
+							char *tag = (char*) myhtml_tag_name_by_id(tree, cellChildID, NULL);
+							if ( string_equals(tag, "-text") ) {
+								char *text = (char*) myhtml_node_text(cellChild, NULL);
+								if (text) {
+									if (current_table.colCount < colIndex+1) {
+										int *newColSizes = malloc(sizeof(int) * (colIndex+1));
+										for (int i = 0; i < colIndex+1; i++) // Zero-out values
+											newColSizes[i] = 0;
+										for (int i = 0; i < current_table.colCount; i++) {
+											newColSizes[i] = current_table.colSizes[i];
+										}
+										if (current_table.created) {
+											free(current_table.colSizes);
+										}
+										current_table.colSizes = newColSizes;
+										current_table.colCount = colIndex + 1;
+									}
+									int strLen = strlen(text);
+									if (strLen > current_table.colSizes[colIndex]) {
+										current_table.colSizes[colIndex] = strLen;
+									}
+								}
+							}
+							cellChild = myhtml_node_child(cellChild);
+						}
+						colIndex++;
+						cell = myhtml_node_next(cell);
+					}
+					tr = myhtml_node_next(tr);
+				}
+				thead_or_tbody = myhtml_node_next(thead_or_tbody);
       }
       current_table.created = true;
     }
@@ -294,12 +330,12 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 
     // Newline
     if ( html_tag_id == TAG_LI ||
-	 html_tag_id == TAG_UL ||
-	 html_tag_id == TAG_OL) {
+				 html_tag_id == TAG_UL ||
+				 html_tag_id == TAG_OL) {
       if ( !(html_tag_id == TAG_UL && list_nesting > 1) &&
-	   !(html_tag_id == TAG_OL && list_nesting > 1) &&
-	   !(html_tag_id == TAG_LI && list_nesting > 1))
-	markdown = string_append(markdown, "\n");
+					 !(html_tag_id == TAG_OL && list_nesting > 1) &&
+					 !(html_tag_id == TAG_LI && list_nesting > 1))
+				markdown = string_append(markdown, "\n");
     }
     else if ( is_block_element(html_tag_id) && !is_block_element(parent_html_tag_id) )
       markdown = string_append(markdown, "\n\n");
@@ -333,9 +369,9 @@ HtmlObject load_html_from_string(char *string)
   myhtml_tree_t* tree = myhtml_tree_create();
   myhtml_tree_init(tree, myhtml);
   myhtml_tree_parse_flags_set(tree,
-			      MyHTML_TREE_PARSE_FLAGS_SKIP_WHITESPACE_TOKEN |
-			      MyHTML_TREE_PARSE_FLAGS_WITHOUT_DOCTYPE_IN_TREE
-			      );
+															MyHTML_TREE_PARSE_FLAGS_SKIP_WHITESPACE_TOKEN |
+															MyHTML_TREE_PARSE_FLAGS_WITHOUT_DOCTYPE_IN_TREE
+															);
 
   // parse html
   myhtml_parse(tree, MyENCODING_UTF_8, string, strlen(string));
