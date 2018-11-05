@@ -215,6 +215,7 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
 					new[i-start] = text[i];
 					mustFreeText = True;
 				}
+				new[end] = '\0';
 				text = new;
 				spacesToPrepend = start;
 				spacesToAppend = origStrLen - end;
@@ -253,6 +254,12 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
     char	   *pname    = (char*) myhtml_tag_name_by_id(tree, pid, NULL);
     int parent_html_tag_id = get_tag_id(pname);
 
+		// If empty tag, don't bother.
+		if ( is_child_containing_element(html_tag_id) && !myhtml_node_child(node) ) {
+			node = myhtml_node_next(node);
+			continue;
+		}
+
     if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
       list_nesting++;
       should_add_newline_to_child_list = true;
@@ -263,6 +270,7 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
       markdown = string_append(markdown, "\n");
     }
 
+		// TODO: This is way over-nested. Fix it.
     if (html_tag_id == TAG_TABLE && !current_table.created ) {
       myhtml_tree_node_t *thead_or_tbody = myhtml_node_child(node);
       while (thead_or_tbody) {
@@ -281,7 +289,7 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 								if (text) {
 									if (current_table.colCount < colIndex+1) {
 										int *newColSizes = malloc(sizeof(int) * (colIndex+1));
-										for (int i = 0; i < colIndex+1; i++) // Zero-out values
+  										for (int i = 0; i < colIndex+1; i++) // Zero-out values
 											newColSizes[i] = 0;
 										for (int i = 0; i < current_table.colCount; i++) {
 											newColSizes[i] = current_table.colSizes[i];

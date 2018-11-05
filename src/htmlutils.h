@@ -135,4 +135,14 @@ boolean is_block_element(int tag_id)
   return false;
 }
 
+boolean is_child_containing_element(int tag_id)
+{
+	if (tag_id == TAG_HR	||
+			tag_id == TAG_BR	||
+			tag_id == TAG_IMG ||
+			tag_id == TAG_TEXT)
+		return false;
+	return true;
+}
+
 #endif
