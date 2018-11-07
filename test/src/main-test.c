@@ -7,6 +7,7 @@
 #include <markdownpanda.h>
 #include "test-helpers.h"
 #include "printdiff.h"
+#include "plugins.h"
 
 char *format_types[] = {"basic-formatting",
 			"code",
@@ -34,7 +35,11 @@ Test(formatting, html_to_markdown) {
     char *md = mdpanda_to_markdown( t.htmlObject );
     if ( ! string_equals( t.md, md) ) {
       cr_log_error("\n html_to_markdown '%s' FAILED \n\n", type);
-      printdiff("Expected", "mdpanda ", t.md, md);
+
+		  char *f = "\n%s:\n<!--Start-->\n%s\n<!--End-->\n";
+			printf(f, "Expected", t.md);
+			printf(f, "Actual", md);
+      /* printdiff("Expected", "mdpanda ", t.md, md); */
       cr_assert(0, "Formatting test failed.");
     }
     cr_assert(1);
@@ -74,7 +79,7 @@ Test(formatting, markdown_to_html) {
 /*
  * Testing ensure_newline in helper.h
  */
-Test(helper_functions, ensure_newlines) {
+Test(plugins, ensure_newlines) {
   char *expected = "Hello\n"; // Expected output after running ensure_newlines on each test string.
 
   size_t tests_length = 4;
@@ -86,13 +91,27 @@ Test(helper_functions, ensure_newlines) {
   tests[3] = string_new("Hello");
 
   for (int i=0; i < tests_length; i++) {
-    ensure_newline( tests[i] );
+    plugin_ensure_newline( tests[i] );
     if ( !string_equals(tests[i], expected)) {
       cr_log_error("tests[%i] failed", i);
       cr_assert(0);
     }
     free( tests[i] );
   }
+
+  cr_assert(1);
+}
+
+Test(plugins, beautify_tables) {
+	char *table = \
+		"# Here is a table\n\n"
+		"| Name | Age |\n"
+		"| Joe | 19 |\n\n"
+		"# Here is another table:\n\n"
+		"| Name | Age |\n"
+		"| ted | 22 |";
+
+	plugin_beautify_tables( table );
 
   cr_assert(1);
 }

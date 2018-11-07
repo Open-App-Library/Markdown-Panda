@@ -30,6 +30,7 @@
 #define TAG_TR		22
 #define TAG_TH		23
 #define TAG_TD		24
+#define TAG_THEAD 25
 
 int get_tag_id(char *tag)
 {
@@ -83,6 +84,8 @@ int get_tag_id(char *tag)
     return TAG_TH;
   else if ( string_equals(tag, "td") )
     return TAG_TD;
+  else if ( string_equals(tag, "thead") )
+    return TAG_THEAD;
   //printf("[WARNING] Could not find tag '%s'\n", tag);
   return -1;
 }
@@ -127,6 +130,7 @@ boolean is_block_element(int tag_id)
       tag_id == TAG_P		||
       tag_id == TAG_PRE		||
       tag_id == TAG_TABLE	||
+      tag_id == TAG_THEAD	||
       tag_id == TAG_BLOCKQUOTE  ||
       tag_id == TAG_BR		||
       tag_id == TAG_OL		||
@@ -143,6 +147,14 @@ boolean is_child_containing_element(int tag_id)
 			tag_id == TAG_TEXT)
 		return false;
 	return true;
+}
+
+boolean is_table_cell(int tag_id)
+{
+	if (tag_id == TAG_TD	||
+			tag_id == TAG_TH)
+		return true;
+	return false;
 }
 
 #endif

@@ -10,14 +10,14 @@ find_package (Threads)
 
 if (EXCLUDE_MD2HTML MATCHES "yes")
   message(STATUS "Markdown->HTML conversion is DISABLED.")
-  add_executable(mdpanda src/main.c src/markdownpanda.c)
+  add_executable(mdpanda src/main.c src/markdownpanda.c src/plugins.c)
   add_library( markdownpanda_static STATIC
-               src/markdownpanda.c)
+               src/markdownpanda.c src/plugins.c)
 else()
   message(STATUS "Markdown->HTML conversion is ENABLED. If needed, you can disable it by passing the '-DEXCLUDE_MD2HTML=yes' option to cmake.")
-  add_executable(mdpanda src/main.c src/markdownpanda.c src/markdownpanda_md2html.c)
+  add_executable(mdpanda src/main.c src/markdownpanda.c src/plugins.c src/markdownpanda_md2html.c)
   add_library( markdownpanda_static STATIC
-               src/markdownpanda.c src/markdownpanda_md2html.c)
+               src/markdownpanda.c src/plugins.c src/markdownpanda_md2html.c)
 endif()
 
 target_link_libraries(mdpanda ${PROJECT_SOURCE_DIR}/lib/libmyhtml_static.a)

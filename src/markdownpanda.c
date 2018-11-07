@@ -2,6 +2,7 @@
 #include "markdownpanda.h"
 #include "helper.h"
 #include "htmlutils.h"
+#include "plugins.h"
 
 #ifdef _WIN32
 #define MyCORE_FMT_Z "%Iu"
@@ -17,13 +18,9 @@ typedef struct {
   char *append;
 } AppendPrependData_t;
 
-typedef struct {
-  int *colSizes; // Array
-  int  colCount;
-  boolean created;
-} MarkdownTable;
-
-MarkdownTable current_table;
+int current_table = 0;
+boolean current_table_created = False;
+boolean current_table_created_hor_line = False;
 
 AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
@@ -89,18 +86,28 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     break;
   case TAG_TR:
     if ( node_is_id(TAG_TH, tree, myhtml_node_child(node) ) ) {
+			if (current_table_created_hor_line)
+				break;
       data.append = "\n";
-      for (int i = 0; i < current_table.colCount; i++) {
-				data.append = string_append(data.append, "|");
-				for (int s = 0; s < current_table.colSizes[i] + 2; s++) { // +2 for two spaces on both siide of table to give nice space
-					data.append = string_append(data.append, "-");
-				}
+      for (int i = 0; i < current_table; i++) {
+				data.append = string_append(data.append, "|--");
       }
       data.append = string_append(data.append, "|\n");
+			current_table_created_hor_line = True;
     } else if ( myhtml_node_next(node) ) {
       data.append = "\n";
     }
     break;
+	case TAG_THEAD:
+		if (current_table_created_hor_line)
+			break;
+		data.append = "\n";
+		for (int i = 0; i < current_table; i++) {
+			data.append = string_append(data.append, "|--");
+		}
+		data.append = string_append(data.append, "|\n");
+		current_table_created_hor_line = True;
+		break;
   case TAG_TD:
     if ( !myhtml_node_next(node) ) {
       data.prepend = " | ";
@@ -170,16 +177,12 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
     if ( table_parent ) {
       int curColIndex = 0;
       myhtml_tree_node_t *prevCell = myhtml_node_prev( myhtml_node_parent(node) );
-      if (curColIndex <= current_table.colCount) {
+      if (curColIndex <= current_table) {
 				while (prevCell) {
 					curColIndex++;
 					prevCell = myhtml_node_prev(prevCell);
 				}
 				int textLen = strlen(text); // 2 for the two spaces added on the side for paddingo
-				int spacesToAdd = current_table.colSizes[curColIndex] - textLen;
-				for (int s = 0; s < spacesToAdd; s++) {
-					data.append = string_append(data.append, " ");
-				}
       } else {
 				puts("ERROR! Counted a table column count greater than exists. Exiting...");
 				exit( EXIT_FAILURE );
@@ -271,7 +274,7 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
     }
 
 		// TODO: This is way over-nested. Fix it.
-    if (html_tag_id == TAG_TABLE && !current_table.created ) {
+    if (html_tag_id == TAG_TABLE && !current_table_created ) {
       myhtml_tree_node_t *thead_or_tbody = myhtml_node_child(node);
       while (thead_or_tbody) {
 				myhtml_tree_node_t *tr = myhtml_node_child(thead_or_tbody);
@@ -287,22 +290,8 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 							if ( string_equals(tag, "-text") ) {
 								char *text = (char*) myhtml_node_text(cellChild, NULL);
 								if (text) {
-									if (current_table.colCount < colIndex+1) {
-										int *newColSizes = malloc(sizeof(int) * (colIndex+1));
-  										for (int i = 0; i < colIndex+1; i++) // Zero-out values
-											newColSizes[i] = 0;
-										for (int i = 0; i < current_table.colCount; i++) {
-											newColSizes[i] = current_table.colSizes[i];
-										}
-										if (current_table.created) {
-											free(current_table.colSizes);
-										}
-										current_table.colSizes = newColSizes;
-										current_table.colCount = colIndex + 1;
-									}
-									int strLen = strlen(text);
-									if (strLen > current_table.colSizes[colIndex]) {
-										current_table.colSizes[colIndex] = strLen;
+									if (current_table < colIndex+1) {
+										current_table = colIndex + 1;
 									}
 								}
 							}
@@ -315,7 +304,8 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 				}
 				thead_or_tbody = myhtml_node_next(thead_or_tbody);
       }
-      current_table.created = true;
+      current_table_created = true;
+			current_table_created_hor_line = False;
     }
 
     // Process the node
@@ -331,9 +321,8 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 
     // Tables
     if (html_tag_id == TAG_TABLE) {
-      free( current_table.colSizes );
-      current_table.colCount = 0;
-      current_table.created = false;
+      current_table = 0;
+      current_table_created = false;
     }
 
     // Newline
@@ -345,8 +334,13 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 					 !(html_tag_id == TAG_LI && list_nesting > 1))
 				markdown = string_append(markdown, "\n");
     }
-    else if ( is_block_element(html_tag_id) && !is_block_element(parent_html_tag_id) )
+    else if ( is_block_element(html_tag_id) && !is_block_element(parent_html_tag_id) && !is_table_cell(parent_html_tag_id) )
       markdown = string_append(markdown, "\n\n");
+
+		/* // Special treatment for THEADs */
+		/* if (parent_html_tag_id == TAG_THEAD) { */
+    /*   markdown = string_append(markdown, "\n"); */
+		/* } */
 
     if (html_tag_id == TAG_OL || html_tag_id == TAG_UL) {
       list_nesting--;
@@ -363,7 +357,8 @@ char *mdpanda_to_markdown(HtmlObject object)
   char *markdown = mdpanda_to_markdown_recursive(object);
 
   // Process output
-  ensure_newline(markdown);
+  plugin_ensure_newline(markdown);
+	plugin_beautify_tables(markdown);
 
   return markdown;
 }
