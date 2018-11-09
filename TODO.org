@@ -1,1 +1,2 @@
-* Make C++ and Qt classes use templates to avoid duplicate definition errors
+* TODO Deprecate all of my homemade string functions for sds - Simple Dynamic Strings. Still keep the API using char*s though.
+* TODO Make C++ and Qt classes use templates to avoid duplicate definition errors

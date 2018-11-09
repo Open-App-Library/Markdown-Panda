@@ -8,6 +8,8 @@
 #include "test-helpers.h"
 #include "printdiff.h"
 #include "plugins.h"
+#include <sds.h>
+#include <string_arrays.h>
 
 char *format_types[] = {"basic-formatting",
 			"code",
@@ -102,16 +104,47 @@ Test(plugins, ensure_newlines) {
   cr_assert(1);
 }
 
+
 Test(plugins, beautify_tables) {
-	char *table = \
+	sds table = sdsnew(\
 		"# Here is a table\n\n"
 		"| Name | Age |\n"
+		"| -- | -- |\n"
 		"| Joe | 19 |\n\n"
 		"# Here is another table:\n\n"
 		"| Name | Age |\n"
-		"| ted | 22 |";
+		"| ted | 22 |\n\n");
 
 	plugin_beautify_tables( table );
 
+	/* sdsfree(table); */
+
   cr_assert(1);
+}
+
+
+Test(helpers, stringarrays) {
+	MDStringList *list = mdstringlist_init();
+
+	mdstringlist_alter(list, 0, 0, "Name");
+	mdstringlist_alter(list, 0, 1, "Age");
+	mdstringlist_alter(list, 0, 2, "Score");
+	mdstringlist_alter(list, 0, 3, "Comments");
+	mdstringlist_alter(list, 1, 0, "Doug");
+	mdstringlist_alter(list, 1, 1, "19");
+	mdstringlist_alter(list, 1, 2, "199");
+	mdstringlist_alter(list, 1, 3, "I like C.");
+
+	// Example Loop
+	/* for (int y=0; y<list->count; y++) { */
+	/* 	StringList *col = list->lists[y]; */
+	/* 	for (int x=0; x<col->count; x++) { */
+	/* 		printf("| %s ", col->strings[x]); */
+	/* 	} */
+	/* 	printf("\n"); */
+	/* } */
+
+	mdstringlist_free(list);
+
+	cr_assert(1);
 }

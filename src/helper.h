@@ -62,26 +62,17 @@ static char *string_append(const char *s1, const char *s2)
   return new_str;
 }
 
-static char *string_appendc(const char *s, char c) {
-	char *new_str = string_append(s, " ");
-	new_str[ strlen(new_str)-1 ] = c;
-	return new_str;
+static void string_append2(char *s1, const char *s2)
+{
+	/* printf("s1=\"%s\" s2=\"%s\" Resizing a %lu to %lu\n", s1,s2, strlen(s1)+1, strlen(s1)+strlen(s2)+1); */
+  char *ptr = (char*) realloc(s1, strlen(s1)+strlen(s2)+1 );
+  if ( ptr != NULL )
+    strcat(s1, s2);
 }
 
-static char *string_append2(char *s1, const char *s2)
-{
-  // puts("WARNING: string_append is deprecated. Please use string_append_safe instead.");
-  char * new_str;
-  if((new_str = malloc(strlen(s1)+strlen(s2)+1)) != NULL){
-    new_str[0] = '\0';   // ensures the memory is an empty string
-    strcat(new_str,s1);
-    strcat(new_str,s2);
-		free(s1);
-  } else {
-    fprintf(stderr,"malloc failed!\n");
-    exit( EXIT_FAILURE );
-  }
-  return new_str;
+static void string_appendc(char *s, const char c) {
+	string_append2(s, " ");
+	s[ strlen(s)-1 ] = c;
 }
 
 static char *string_append_safe(char *s1, char *s2)

@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sds.h>
+#include <string_arrays.h>
 #include "helper.h"
 
 void plugin_ensure_newline(char *str)
@@ -18,16 +20,151 @@ void plugin_ensure_newline(char *str)
   }
 }
 
+typedef struct {
+	int  row_count;
+	int  column_count;
+	int* column_max_widths;
+	MDStringList *cells;
+} tableMetrics;
+
+// Determines if a row in a row is a horizontal divider line
+// ex. "| ---- | ---- |"
+boolean tableRowIsDivider(sds rowStr, int startIndex) {
+	char c = rowStr[startIndex];
+	if (c == ' ') {
+		return tableRowIsDivider(rowStr, startIndex+1);
+	} else if (c == '-') {
+		return True;
+	} else {
+		return False;
+	}
+}
+
+tableMetrics getTableMetrics(sds tableStr)
+{
+	tableMetrics t;
+	t.row_count = 0;
+	t.column_count = 0;
+	t.column_max_widths = malloc( 1*sizeof(int) );
+	t.cells = mdstringlist_init();
+
+	boolean editing_cell = False;
+	sds currentCellText = sdsempty();
+	int curColumn = -1;
+	int curColumnWidth = 0;
+
+	// Loop through table string
+	for (int i = 0; i < sdslen(tableStr); i++) {
+		char c = tableStr[i];
+
+		// If editing a cell and you reach a newline or pipe character...
+		// ...then set column in column_max_width to the current cell width
+		//    if it is larger than the current value.
+		if (editing_cell && (c == '\n' || c == '|')) {
+			// Done with the cell. Process the results.
+			int max_widths_len = sizeof(t.column_max_widths);
+
+			if (max_widths_len < 0)
+				puts("WARNING! max_widths_len >= sizeof(t.column_max_widths) -- This should never happen! :(");
+
+			// Resize max col size array if needed
+			if (sizeof(t.column_max_widths) < sizeof(int)*curColumn+1) {
+				int *buff = realloc(t.column_max_widths, sizeof(int)*curColumn+1);
+				if (buff) t.column_max_widths = buff;
+				t.column_max_widths[curColumn] = 0;
+			}
+
+			// Adjust column count if needed
+			if (curColumn+1 > t.column_count) {
+				t.column_count = curColumn+1;
+			}
+
+			if (curColumnWidth > t.column_max_widths[curColumn]) {
+				t.column_max_widths[curColumn] = curColumnWidth;
+			}
+		}
+
+		// Process cell text
+		if ((c == '\n' || c == '|') && sdslen(currentCellText)) {
+			if (editing_cell) {
+				int row=t.row_count,col=curColumn;
+				mdstringlist_alter(t.cells, row, col, sdsdup(currentCellText));
+			}
+			sdsfree(currentCellText);
+			currentCellText = sdsempty();
+		}
+
+		// If current char is a newline character or on the last char in the string...
+		// ...Set editing_cell to false, increment row count, reset curColumn, reset curColumnWidth
+		if (c == '\n' || i+1 >= sdslen(tableStr)) {
+			editing_cell = False;
+			t.row_count++;
+			curColumn = -1;
+			curColumnWidth = 0;
+		}
+		// If current char is a pipe character and the next char is not a newline...
+		// ...Set editing_cell to true, incremenet curColumn, reset curColumnWidth.
+		else if (c == '|' && i+1 < sdslen(tableStr) && tableStr[i+1] != '\n') {
+			editing_cell = True;
+			curColumn++;
+			curColumnWidth = 0;
+		}
+		// Otherwise, if editing_cell...
+		// ...increment the curColumnWidth.
+		else if(editing_cell && c != '|' && c != '\n') {
+			char char_to_string[] = {c};
+			sds char_string = sdsnewlen(char_to_string, 1);
+			currentCellText = sdscat(currentCellText, char_string);
+			sdsfree(char_string);
+			curColumnWidth++;
+		}
+
+	}
+	return t;
+}
+
+void freeTableMetrics(tableMetrics t)
+{
+	free(t.column_max_widths);
+}
+
+sds process_table(sds tableStr)
+{
+	sds newstr = sdsnew("");
+
+	tableMetrics t = getTableMetrics(tableStr);
+	MDStringList *cells = t.cells;
+
+	for (int y = 0; y < cells->count; y++) {
+
+		StringList *col = cells->lists[y];
+		for (int x = 0; x < col->count; x++) {
+			newstr = sdscatfmt(newstr, "| %s", col->strings[x]);
+			if (x == col->count-1)
+				newstr = sdscat(newstr, " |");
+		}
+
+		if (y != cells->count-1)
+			newstr = sdscat(newstr, "\n");
+	}
+
+
+	mdstringlist_free( t.cells );
+	/* sdsfree(tableStr); */
+	return newstr;
+}
+
 void plugin_beautify_tables(char *str)
 {
 	int number_of_tables_processed = 0;
 
-	char *newStr = malloc(1); newStr[0] = '\0'; // This will be the processed string
+	sds newStr = sdsnew("");
+	sds curTable = sdsnew("");
 
 	boolean first_char_of_line = True;
 	boolean editing_table = False;
 	boolean was_editing_table = False;
-	char *curTable = malloc(1); curTable[0] = '\0';
+
 	for (int i = 0; i < strlen(str); i++) {
 		char c = str[i];
 
@@ -52,29 +189,28 @@ void plugin_beautify_tables(char *str)
 		//// START: THE MAIN LOGIC
 		// Process the current char
 
-		if (editing_table) {
-			if (c == '\n')
-				curTable = string_append2(curTable, "\\N\n");
-			else
-				curTable = string_appendc(curTable, c);
-		} else {
-			if (c == '\n')
-				newStr = string_append2(newStr, "\\n\n");
-			else
-				newStr = string_appendc(newStr, c);
-		}
-
 		// If not editing table and was editing table or on last char and currently editing table
 		// Process the completed table
 		if ( (!editing_table && was_editing_table) || (i == strlen(str)-1 && editing_table) ) {
-			newStr = string_append2(newStr, curTable);
-			free(curTable);
-			curTable = malloc(1); curTable[0] = '\0';
+			sds processed_table = process_table(curTable);
+			newStr = sdscat(newStr, processed_table);
+			sdsfree(curTable);
+			sdsfree(processed_table);
+			curTable = sdsempty();
 		}
+
+		char cur_char[] = {c};
+ 		sds char_string = sdsnewlen(cur_char, 1);
+		if (editing_table) {
+			curTable = sdscat(curTable, char_string);
+		} else {
+			newStr = sdscat(newStr, char_string);
+		}
+
 		//// END: THE MAIN LOGIC
 
 		// Save the current state of editing_table
 		was_editing_table = editing_table;
 	}
-	printf("New string\n%s", newStr);
+	printf("%s", newStr);
 }

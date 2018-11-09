@@ -78,7 +78,7 @@ int main(int argc, char **argv)
       HtmlObject html = load_html_from_file( filename );
       char *toMarkdown = mdpanda_to_markdown( html );
       printf("%s", toMarkdown);
-      destroy_html_object( html );    
+      destroy_html_object( html );
     } else if ( string_equals(filename_extension, ".md")) {
       char *text = file_to_string(filename);
       char *toHtml = mdpanda_to_html(text);
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
     } else {
       printf("Invalid file extension %s\n", filename_extension);
     }
-    
+
   }
   clock_t end = clock();   // Get end time
 
