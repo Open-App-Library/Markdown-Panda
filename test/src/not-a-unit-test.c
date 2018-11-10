@@ -37,6 +37,7 @@ int main() {
 
 	// Run Beautification code
 	table = plugin_beautify_tables( table );
+	table = plugin_ensure_newline( table );
 
 	printf("Expected:\n[TABLE]%s[/TABLE]\nActual:\n[TABLE]%s[/TABLE]", expectedResult, table);
 

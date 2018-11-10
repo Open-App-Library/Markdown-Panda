@@ -10,7 +10,7 @@
 /*
  * Ensures there is a newline at end of string.
  */
-void plugin_ensure_newline(char *str);
+char *plugin_ensure_newline(char *str);
 
 /*
  * Will convert this...

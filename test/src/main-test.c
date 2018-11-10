@@ -93,7 +93,7 @@ Test(plugins, ensure_newlines) {
   tests[3] = string_new("Hello");
 
   for (int i=0; i < tests_length; i++) {
-    plugin_ensure_newline( tests[i] );
+    tests[i] = plugin_ensure_newline( tests[i] );
     if ( !string_equals(tests[i], expected)) {
       cr_log_error("tests[%i] failed", i);
       cr_assert(0);
@@ -126,12 +126,10 @@ Test(plugins, beautify_tables) {
 
 	char *expectedResult = malloc( strlen(expectedResult_stack)+1 );
 	char *table = malloc( strlen(table_stack)+1 );
-
-
 	strcpy(table, table_stack);
 	strcpy(expectedResult, expectedResult_stack);
 
-	plugin_beautify_tables( table );
+	table = plugin_beautify_tables( table );
 
 	if ( !string_equals(table, expectedResult)) {
 		cr_log_error("plugins/beautify_tables test failed. Does not match expected.");

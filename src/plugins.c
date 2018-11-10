@@ -6,18 +6,23 @@
 #include <string_arrays.h>
 #include "helper.h"
 
-void plugin_ensure_newline(char *str)
+char *plugin_ensure_newline(char *str)
 {
-  for (int i = strlen(str)-1; i > 0; i--) {
-    if ( str[i] != '\n' ) {
-      if ( i+2 >= strlen(str)-1 )
-      	if ( !realloc(str, i+2) )
-      	  puts("Error running realloc in markdownpanda.c in mdpanda_to_markdown CASE 1");
-      str[i+1] = '\n';
-      str[i+2] = '\0';
+	char *newStr = strdup( str );
+	int len = strlen(newStr);
+  for (int i = len-1; i > 0; i--) {
+    if ( newStr[i] != '\n' ) {
+      if ( i+2 >= len-1 ) {
+				newStr = realloc(newStr, sizeof(char)*(len+2));
+				len += 2;
+			}
+      newStr[i+1] = '\n';
+      newStr[i+2] = '\0';
       break;
     }
   }
+	free(str);
+	return newStr;
 }
 
 typedef struct {
