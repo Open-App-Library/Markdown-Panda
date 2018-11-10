@@ -126,6 +126,7 @@ tableMetrics getTableMetrics(sds tableStr)
 void freeTableMetrics(tableMetrics t)
 {
 	free(t.column_max_widths);
+	mdstringlist_free( t.cells );
 }
 
 sds process_table(sds tableStr)
@@ -139,17 +140,48 @@ sds process_table(sds tableStr)
 
 		StringList *col = cells->lists[y];
 		for (int x = 0; x < col->count; x++) {
-			newstr = sdscatfmt(newstr, "| %s", col->strings[x]);
-			if (x == col->count-1)
-				newstr = sdscat(newstr, " |");
+			sds text = sdsdup(col->strings[x]);
+			int ts, ps=0, as=0; // count for total spaces, appendSpaces and prependSpaces
+			sds appendSpaces = sdsempty();
+			sds prependSpaces = sdsempty();
+
+			boolean isDivider = False;
+			if ( tableRowIsDivider(text, 0) )
+				isDivider = True;
+
+			if (!isDivider) {
+				ts = t.column_max_widths[x] - sdslen(col->strings[x]);
+				ps = ts/2;
+				as = ts/2 + ts%2;
+
+				for (int i = 0; i < as; i++) {
+					appendSpaces = sdscat(appendSpaces, " ");
+					if (i < ps)
+						prependSpaces = sdscat(prependSpaces, " ");
+				}
+			} else {
+				sdsfree(text);
+				text = sdsempty();
+				appendSpaces = sdscat(appendSpaces, " ");
+				prependSpaces = sdscat(prependSpaces, " ");
+				for (int i = 0; i < t.column_max_widths[x]-2; i++)
+					text = sdscat(text, "-");
+			}
+
+
+			if (x == 0)
+				newstr = sdscat(newstr, "|");
+			newstr = sdscatfmt(newstr, "%s%s%s|", prependSpaces, text, appendSpaces);
+			sdsfree(appendSpaces);
+			sdsfree(prependSpaces);
+			sdsfree(text);
 		}
 
 		if (y != cells->count-1)
 			newstr = sdscat(newstr, "\n");
 	}
 
-
-	mdstringlist_free( t.cells );
+	freeTableMetrics(t);
 	/* sdsfree(tableStr); */
 	return newstr;
 }
