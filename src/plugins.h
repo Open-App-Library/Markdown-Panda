@@ -23,6 +23,6 @@ void plugin_ensure_newline(char *str);
  * | ---- | --- |
  * | Joe  | 19  |
  */
-void plugin_beautify_tables(char *str);
+char *plugin_beautify_tables(char *str);
 
 #endif

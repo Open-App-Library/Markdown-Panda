@@ -68,7 +68,6 @@ tableMetrics getTableMetrics(sds tableStr)
 			if (t.column_count < curColumn+1) {
 				int *buff = realloc(t.column_max_widths, sizeof(int)*(curColumn+1));
 				if (buff) t.column_max_widths = buff;
-				printf("(%i < %i)==true - Resized buff to %i\n", t.column_count, curColumn+1, curColumn+1);
 				t.column_max_widths[curColumn] = 0;
 			}
 
@@ -76,7 +75,6 @@ tableMetrics getTableMetrics(sds tableStr)
 			if (curColumn+1 > t.column_count) {
 				t.column_count = curColumn+1;
 			}
-			printf("curc:%i\n",curColumn);
 			if (curColumnWidth > t.column_max_widths[curColumn]) {
 				t.column_max_widths[curColumn] = curColumnWidth;
 			}
@@ -118,6 +116,9 @@ tableMetrics getTableMetrics(sds tableStr)
 		}
 
 	}
+
+	sdsfree(currentCellText);
+
 	return t;
 }
 
@@ -184,7 +185,7 @@ sds process_table(sds tableStr)
 	return newstr;
 }
 
-void plugin_beautify_tables(char *str)
+char *plugin_beautify_tables(char *str)
 {
 	int number_of_tables_processed = 0;
 
@@ -236,6 +237,7 @@ void plugin_beautify_tables(char *str)
 		} else {
 			newStr = sdscat(newStr, char_string);
 		}
+		sdsfree(char_string);
 
 		//// END: THE MAIN LOGIC
 
@@ -243,10 +245,18 @@ void plugin_beautify_tables(char *str)
 		was_editing_table = editing_table;
 	}
 
-	if ( strlen(str) < strlen(newStr)) {
-		if ( !realloc(str, strlen(newStr)+1) )
-			puts("[ERROR]: Unable to realloc str to newStr size.");
-	}
-	strcpy(str, newStr);
+	// Freeing memory
+	sdsfree(curTable);
+
+	/* if ( strlen(str) < strlen(newStr)) { */
+	/* 	if (!realloc(str, strlen(newStr)+1)) puts("[WARNING] Wasn't able to realloc string."); */
+	/* } */
+
+	/* strcpy(str, newStr); */
+
+	free(str);
+	char *returnStr = strdup( newStr );
 	sdsfree(newStr);
+
+	return returnStr;
 }

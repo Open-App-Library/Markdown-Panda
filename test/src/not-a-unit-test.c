@@ -20,27 +20,28 @@ int main() {
 		"# Here is another table:\n\n"
 		"| Name | Age |\n"
 		"| ted | 22 |\n\n";
-	/* char *expectedResult_stack = \ */
-	/* 	"# Here is a table\n\n" */
-	/* 	"| Name | Age |             Description            |\n" */
-	/* 	"| ---- | --- | ---------------------------------- |\n" */
-	/* 	"| Joe  | 19  | An average guy with a super power. |\n\n" */
-	/* 	"# Here is another table:\n\n" */
-	/* 	"| Name | Age |\n" */
-	/* 	"| ted  | 22  |\n\n"; */
+	char *expectedResult_stack = \
+		"# Here is a table\n\n"
+		"| Name | Age |             Description            |\n"
+		"| ---- | --- | ---------------------------------- |\n"
+		"| Joe  | 19  | An average guy with a super power. |\n\n"
+		"# Here is another table:\n\n"
+		"| Name | Age |\n"
+		"| ted  | 22  |\n\n";
 
 	// Malloc new variables and copy the strings
 	char *table = (char*) malloc(strlen(table_stack)+1);
-	/* char *expectedResult = (char*) malloc(strlen(expectedResult_stack)+1); */
+	char *expectedResult = (char*) malloc(strlen(expectedResult_stack)+1);
 	strcpy(table, table_stack);
-	/* strcpy(expectedResult, expectedResult_stack); */
+	strcpy(expectedResult, expectedResult_stack);
 
 	// Run Beautification code
-	plugin_beautify_tables( table );
-	//	printf("Before:\n%s", expectedResult);
+	table = plugin_beautify_tables( table );
+
+	printf("Expected:\n[TABLE]%s[/TABLE]\nActual:\n[TABLE]%s[/TABLE]", expectedResult, table);
 
 	free(table);
-	//	free(expectedResult);
+	free(expectedResult);
 
 	return 0;
 }

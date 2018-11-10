@@ -76,7 +76,7 @@ static MDStringList* mdstringlist_init()
 
 static void mdstringlist_addrow(MDStringList *list)
 {
-	list->lists = realloc(list->lists, sizeof(list->lists)+sizeof(MDStringList*));
+	list->lists = realloc(list->lists,  (list->count+1) * sizeof(MDStringList*));
 	list->lists[ list->count ] = stringlist_init();
 	list->count++;
 }
