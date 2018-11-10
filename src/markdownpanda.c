@@ -357,8 +357,8 @@ char *mdpanda_to_markdown(HtmlObject object)
   char *markdown = mdpanda_to_markdown_recursive(object);
 
   // Process output
-  plugin_ensure_newline(markdown);
-	plugin_beautify_tables(markdown);
+  markdown = plugin_ensure_newline(markdown);
+	markdown = plugin_beautify_tables(markdown);
 
   return markdown;
 }

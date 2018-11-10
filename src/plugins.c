@@ -57,7 +57,7 @@ tableMetrics getTableMetrics(sds tableStr)
 	boolean editing_cell = False;
 	sds currentCellText = sdsempty();
 	int curColumn = -1;
-	int curColumnWidth = 0;
+	//int curColumnWidth = 0;
 
 	// Loop through table string
 	for (int i = 0; i < sdslen(tableStr); i++) {
@@ -80,16 +80,22 @@ tableMetrics getTableMetrics(sds tableStr)
 			if (curColumn+1 > t.column_count) {
 				t.column_count = curColumn+1;
 			}
-			if (curColumnWidth > t.column_max_widths[curColumn]) {
-				t.column_max_widths[curColumn] = curColumnWidth;
-			}
 		}
 
 		// Process cell text
 		if ((c == '\n' || c == '|') && sdslen(currentCellText)) {
 			if (editing_cell) {
 				int row=t.row_count,col=curColumn;
-				mdstringlist_alter(t.cells, row, col, sdsdup(currentCellText));
+
+				char *cellTrimmed = trimWhitespace( currentCellText );
+				sds cellTrimmed_sds = sdsnewlen(cellTrimmed, strlen(cellTrimmed));
+
+				mdstringlist_alter(t.cells, row, col, cellTrimmed_sds);
+
+				int len = strlen( cellTrimmed );
+				if (len+2 > t.column_max_widths[curColumn]) { // +2 is for the two spaces (padding)
+					t.column_max_widths[curColumn] = len+2;
+				}
 			}
 			sdsfree(currentCellText);
 			currentCellText = sdsempty();
@@ -101,14 +107,14 @@ tableMetrics getTableMetrics(sds tableStr)
 			editing_cell = False;
 			t.row_count++;
 			curColumn = -1;
-			curColumnWidth = 0;
+			//			curColumnWidth = 0;
 		}
 		// If current char is a pipe character and the next char is not a newline...
 		// ...Set editing_cell to true, incremenet curColumn, reset curColumnWidth.
 		else if (c == '|' && i+1 < sdslen(tableStr) && tableStr[i+1] != '\n') {
 			editing_cell = True;
 			curColumn++;
-			curColumnWidth = 0;
+			//			curColumnWidth = 0;
 		}
 		// Otherwise, if editing_cell...
 		// ...increment the curColumnWidth.
@@ -117,7 +123,7 @@ tableMetrics getTableMetrics(sds tableStr)
 			sds char_string = sdsnewlen(char_to_string, 1);
 			currentCellText = sdscat(currentCellText, char_string);
 			sdsfree(char_string);
-			curColumnWidth++;
+			//			curColumnWidth++;
 		}
 
 	}
@@ -155,8 +161,8 @@ sds process_table(sds tableStr)
 
 			if (!isDivider) {
 				ts = t.column_max_widths[x] - sdslen(col->strings[x]);
-				ps = ts/2;
-				as = ts/2 + ts%2;
+				ps = 1;
+				as = ts-1;
 
 				for (int i = 0; i < as; i++) {
 					appendSpaces = sdscat(appendSpaces, " ");
@@ -252,12 +258,6 @@ char *plugin_beautify_tables(char *str)
 
 	// Freeing memory
 	sdsfree(curTable);
-
-	/* if ( strlen(str) < strlen(newStr)) { */
-	/* 	if (!realloc(str, strlen(newStr)+1)) puts("[WARNING] Wasn't able to realloc string."); */
-	/* } */
-
-	/* strcpy(str, newStr); */
 
 	free(str);
 	char *returnStr = strdup( newStr );

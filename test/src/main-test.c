@@ -117,7 +117,7 @@ Test(plugins, beautify_tables) {
 
 	char *expectedResult_stack = \
 		"# Here is a table\n\n"
-		"| Name | Age |            Description             |\n"
+		"| Name | Age | Description                        |\n"
 		"| ---- | --- | ---------------------------------- |\n"
 		"| Joe  | 19  | An average guy with a super power. |\n\n"
 		"# Here is another table:\n\n"
