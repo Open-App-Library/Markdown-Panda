@@ -43,6 +43,15 @@ else()
   message(WARNING "Criterion unit testing framework is NOT installed. You may proceed but no unit tests will be generated.")
 endif()
 
+add_executable(NotAUnitTest test/src/not-a-unit-test.c)
+target_link_libraries(NotAUnitTest criterion)
+target_link_libraries(NotAUnitTest markdownpanda_static)
+target_link_libraries(NotAUnitTest ${PROJECT_SOURCE_DIR}/lib/libmyhtml_static.a)
+target_link_libraries(NotAUnitTest ${PROJECT_SOURCE_DIR}/lib/libcmark-gfm-extensions.a)
+target_link_libraries(NotAUnitTest ${PROJECT_SOURCE_DIR}/lib/libcmark-gfm.a)
+target_link_libraries(NotAUnitTest ${CMAKE_THREAD_LIBS_INIT})
+
+
 # Install
 install(TARGETS mdpanda markdownpanda_static
         RUNTIME DESTINATION bin

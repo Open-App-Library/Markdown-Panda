@@ -110,22 +110,24 @@ Test(plugins, beautify_tables) {
 		"# Here is a table\n\n"
 		"| Name | Age | Description |\n"
 		"| -- | -- | -- |\n"
-		"| Joe | 19 | An average guy with a super power |\n\n"
+		"| Joe | 19 | An average guy with a super power. |\n\n"
 		"# Here is another table:\n\n"
 		"| Name | Age |\n"
 		"| ted | 22 |\n\n";
 
 	char *expectedResult_stack = \
 		"# Here is a table\n\n"
-		"| Name | Age |             Description            |\n"
+		"| Name | Age |            Description             |\n"
 		"| ---- | --- | ---------------------------------- |\n"
 		"| Joe  | 19  | An average guy with a super power. |\n\n"
 		"# Here is another table:\n\n"
 		"| Name | Age |\n"
 		"| ted  | 22  |\n\n";
 
-	char *table = malloc( sizeof(table_stack)+1 );
-	char *expectedResult = malloc( sizeof(expectedResult_stack)+1 );
+	char *expectedResult = malloc( strlen(expectedResult_stack)+1 );
+	char *table = malloc( strlen(table_stack)+1 );
+
+
 	strcpy(table, table_stack);
 	strcpy(expectedResult, expectedResult_stack);
 
@@ -133,11 +135,13 @@ Test(plugins, beautify_tables) {
 
 	if ( !string_equals(table, expectedResult)) {
 		cr_log_error("plugins/beautify_tables test failed. Does not match expected.");
+		printf("[ Expected ]\n%s---\n", expectedResult);
+		printf("[ Actual   ]\n%s---\n-", table);
 		cr_assert(0);
 	}
 
-	free(table);
 	free(expectedResult);
+	free(table);
 
   cr_assert(1);
 }

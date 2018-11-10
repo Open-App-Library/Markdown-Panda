@@ -45,7 +45,8 @@ tableMetrics getTableMetrics(sds tableStr)
 	tableMetrics t;
 	t.row_count = 0;
 	t.column_count = 0;
-	t.column_max_widths = malloc( 1*sizeof(int) );
+	t.column_max_widths = malloc( sizeof(int) );
+	t.column_max_widths[0] = 0;
 	t.cells = mdstringlist_init();
 
 	boolean editing_cell = False;
@@ -62,15 +63,12 @@ tableMetrics getTableMetrics(sds tableStr)
 		//    if it is larger than the current value.
 		if (editing_cell && (c == '\n' || c == '|')) {
 			// Done with the cell. Process the results.
-			int max_widths_len = sizeof(t.column_max_widths);
-
-			if (max_widths_len < 0)
-				puts("WARNING! max_widths_len >= sizeof(t.column_max_widths) -- This should never happen! :(");
 
 			// Resize max col size array if needed
-			if (sizeof(t.column_max_widths) < sizeof(int)*curColumn+1) {
-				int *buff = realloc(t.column_max_widths, sizeof(int)*curColumn+1);
+			if (t.column_count < curColumn+1) {
+				int *buff = realloc(t.column_max_widths, sizeof(int)*(curColumn+1));
 				if (buff) t.column_max_widths = buff;
+				printf("(%i < %i)==true - Resized buff to %i\n", t.column_count, curColumn+1, curColumn+1);
 				t.column_max_widths[curColumn] = 0;
 			}
 
@@ -78,7 +76,7 @@ tableMetrics getTableMetrics(sds tableStr)
 			if (curColumn+1 > t.column_count) {
 				t.column_count = curColumn+1;
 			}
-
+			printf("curc:%i\n",curColumn);
 			if (curColumnWidth > t.column_max_widths[curColumn]) {
 				t.column_max_widths[curColumn] = curColumnWidth;
 			}
@@ -244,9 +242,11 @@ void plugin_beautify_tables(char *str)
 		// Save the current state of editing_table
 		was_editing_table = editing_table;
 	}
+
 	if ( strlen(str) < strlen(newStr)) {
-		str = (char*)realloc(str, strlen(newStr));
+		if ( !realloc(str, strlen(newStr)+1) )
+			puts("[ERROR]: Unable to realloc str to newStr size.");
 	}
 	strcpy(str, newStr);
-	free(newStr);
+	sdsfree(newStr);
 }
