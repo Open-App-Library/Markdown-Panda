@@ -244,5 +244,9 @@ void plugin_beautify_tables(char *str)
 		// Save the current state of editing_table
 		was_editing_table = editing_table;
 	}
-	printf("%s", newStr);
+	if ( strlen(str) < strlen(newStr)) {
+		str = (char*)realloc(str, strlen(newStr));
+	}
+	strcpy(str, newStr);
+	free(newStr);
 }
