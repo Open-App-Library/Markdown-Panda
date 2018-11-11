@@ -20,6 +20,7 @@ build:
       - include/
       - cmake/
       - cmake/RunUnitTests
+      - external-libraries/sds
   script:
     - echo Installing MyHTML
     - cd external-libraries/myhtml
