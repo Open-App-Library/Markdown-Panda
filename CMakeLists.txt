@@ -12,6 +12,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS yes)
 set(SOURCE_FILES_MDPANDA src/markdownpanda.c src/plugins.c)
 set(SOURCE_FILES ${SOURCE_FILES_MDPANDA} src/markdownpanda_md2html.c external-libraries/sds/sds.c)
 
+# Platform Specific
+if(APPLE)
+  include_directories(/usr/local/include)
+  link_directories(/usr/local/lib)
+endif()
+
+
 # Check if user wants to disable markdown->HTML conversion
 if (EXCLUDE_MD2HTML MATCHES "yes")
   message(STATUS "Markdown->HTML conversion is DISABLED.")
