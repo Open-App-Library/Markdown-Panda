@@ -11,15 +11,20 @@
 #include <sds.h>
 #include <string_arrays.h>
 
-char *format_types[] = {"basic-formatting",
-			"code",
-			"headings",
-			"img",
-			"link",
-			"lists",
-			"paragraph",
-			"tables"};
-int format_count = 8;
+// These format types correspond with the files in the md/html folders.
+char *format_types[] = \
+	{
+	 "basic-formatting",
+	 "code",
+	 "headings",
+	 "img",
+	 "link",
+	 "lists",
+	 "paragraph",
+	 "tables",
+	 "bold-italic-inline"
+	};
+int format_count = 9;
 
 
 /*

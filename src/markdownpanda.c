@@ -22,6 +22,27 @@ int current_table = 0;
 boolean current_table_created = False;
 boolean current_table_created_hor_line = False;
 
+char *string_append_tag( char *str, char *append )
+{
+	char *newStr;
+	int len = strlen(str);
+
+	if (len) {
+		newStr = strdup(str);
+		char last_char_of_str = str[strlen(newStr)-1];
+		char first_char_of_append = append[0];
+		if ( last_char_of_str     == '*' && first_char_of_append == '*')
+			newStr = string_append(newStr, " ");
+
+		newStr = string_append(newStr, append);
+		free(str);
+	} else {
+		newStr = strdup(append);
+	}
+
+	return newStr;
+}
+
 AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tree_node_t *node)
 {
   AppendPrependData_t data = { "", "" };
@@ -200,11 +221,12 @@ AppendPrependData_t getAppendPrepend( char *tag, myhtml_tree_t *tree, myhtml_tre
 			int origStrLen = strlen(text);
 			int start=0, end=origStrLen;
 			int spacesToPrepend=0, spacesToAppend=0;
+			// Find the first non-space
 			for ( int i = 0; i < origStrLen+1; i++ ) {
 				if (text[i] == ' ') start = i+1;
 				else break;
 			}
-			// Check ending
+			// Find the first non-space, starting from the end (right-to-left)
 			for ( int i = origStrLen-1; i > 0; i-- ) {
 				if (text[i] == ' ') end = i;
 				else break;
@@ -310,7 +332,8 @@ char *mdpanda_to_markdown_recursive(HtmlObject object)
 
     // Process the node
     AppendPrependData_t appendPrependData = getAppendPrepend( tag_name, tree, node );
-    markdown = string_append(markdown, appendPrependData.prepend);
+		//		markdown = add_space_if_needed( markdown );
+    markdown = string_append_tag(markdown, appendPrependData.prepend);
 
     // Append the children
     HtmlObject child = { object.myhtml_instance, tree, myhtml_node_child(node) };
