@@ -51,7 +51,6 @@ else()
 endif()
 
 add_executable(NotAUnitTest test/src/not-a-unit-test.c)
-target_link_libraries(NotAUnitTest criterion)
 target_link_libraries(NotAUnitTest markdownpanda_static)
 target_link_libraries(NotAUnitTest ${PROJECT_SOURCE_DIR}/lib/libmyhtml_static.a)
 target_link_libraries(NotAUnitTest ${PROJECT_SOURCE_DIR}/lib/libcmark-gfm-extensions.a)
