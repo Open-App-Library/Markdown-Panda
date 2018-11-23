@@ -22,21 +22,7 @@ build:
       - cmake/RunUnitTests
       - external-libraries/sds
   script:
-    - echo Installing MyHTML
-    - cd external-libraries/myhtml
-    - make
-    - make install prefix=../..
-    - echo Installing CMark-GFM
-    - cd ../cmark-gfm
-    - mkdir build && cd build
-    - cmake .. -DCMAKE_INSTALL_PREFIX=../../..
-    - make
-    - make install
-    - echo Installing MarkdownPanda
-    - cd ../../..
-    - mkdir cmake && cd cmake
-    - cmake ..
-    - make
+    - sh build.sh
 
 test:
   stage: test
