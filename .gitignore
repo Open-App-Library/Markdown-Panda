@@ -1,8 +1,3 @@
-# Force include
-!external-libraries/**/Makefile
-!external-libraries/**/include/**/*
-!external-libraries/**/**/*
-
 # CMake
 CMakeCache.txt
 CMakeFiles/
@@ -67,5 +62,7 @@ target_wrapper.*
 *.qmlproject.user
 *.qmlproject.user.*
 
-# QtCreator CMake
 CMakeLists.txt.user*
+
+# Force include
+!external-libraries/**
