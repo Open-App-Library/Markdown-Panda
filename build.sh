@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Will install to build/ if INSTALL_PREFIX variable is not set.
+INSTALL_DIR=${INSTALL_PREFIX:-build/} 
+
 MYHTML_VERSION=4.0.5
 CMARK_VERSION=0.28.3.gfm.19
 
@@ -23,9 +26,18 @@ cd ../../..
 # MarkdownPanda
 echo MarkdownPanda
 mkdir -p cmake && cd cmake
-cmake -DCMAKE_INSTALL_PREFIX=../build ..
+cmake -DCMAKE_INSTALL_PREFIX=../$INSTALL_DIR ..
 make
 make install
 
 echo
-echo DONE! Installed to 'build/'
+echo
+echo ====================================================
+echo SUCCESS! Installed MarkdownPanda to \'$INSTALL_DIR\'
+echo ----------------------------------------------------
+echo If you would like to customize where MarkdownPanda
+echo is installed, set the env. variable INSTALL_PREFIX
+echo before running build.sh
+echo example: INSTALL_PREFIX=myapp sh build.sh
+echo ====================================================
+echo
