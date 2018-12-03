@@ -1,16 +1,18 @@
 cmake_minimum_required (VERSION 2.6)
 project (MarkdownPanda)
 
+set(SDS_VERSION "2.0.0")
+
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${PROJECT_SOURCE_DIR}/src")
-include_directories("${PROJECT_SOURCE_DIR}/external-libraries/sds/")
+include_directories("${PROJECT_SOURCE_DIR}/external-libraries/sds-${SDS_VERSION}")
 
 # Settings CMAKE variables
 set(CMAKE_EXPORT_COMPILE_COMMANDS yes)
 
 # Settings variables
 set(SOURCE_FILES_MDPANDA src/markdownpanda.c src/plugins.c)
-set(SOURCE_FILES ${SOURCE_FILES_MDPANDA} src/markdownpanda_md2html.c external-libraries/sds/sds.c)
+set(SOURCE_FILES ${SOURCE_FILES_MDPANDA} src/markdownpanda_md2html.c external-libraries/sds-${SDS_VERSION}/sds.c)
 
 # Platform Specific
 if(APPLE)

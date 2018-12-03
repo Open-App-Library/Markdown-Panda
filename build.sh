@@ -1,9 +1,12 @@
 #!/bin/bash
 set -e
 
+MYHTML_VERSION=4.0.5
+CMARK_VERSION=0.28.3.gfm.19
+
 # MyHTML
 echo MyHTML
-cd external-libraries/myhtml
+cd external-libraries/myhtml-$MYHTML_VERSION
 ls
 make
 make install prefix=../..
@@ -11,7 +14,7 @@ cd ../..
 
 #CMark-GFM
 echo CMark-GFM
-cd external-libraries/cmark-gfm
+cd external-libraries/cmark-gfm-$CMARK_VERSION
 mkdir -p build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=../../..
 make
