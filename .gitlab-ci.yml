@@ -1,6 +1,4 @@
 image: ubuntu
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
 stages:
   - build
   - test
