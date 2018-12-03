@@ -20,7 +20,7 @@ build:
       - include/
       - cmake/
       - cmake/RunUnitTests
-      - external-libraries/sds
+      - external-libraries/sds-*.*.*
   script:
     - sh build.sh
 
