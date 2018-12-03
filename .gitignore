@@ -1,3 +1,12 @@
+# Force include
+!external-libraries/**/Makefile
+!external-libraries/**/include/**/*
+!external-libraries/**/**/*
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+
 # Emacs
 *~
 *#
